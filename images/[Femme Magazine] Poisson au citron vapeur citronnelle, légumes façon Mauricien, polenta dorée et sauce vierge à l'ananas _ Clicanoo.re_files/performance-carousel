@@ -1,0 +1,1922 @@
+'use strict';
+
+var n,
+    u,
+    i,
+    t,
+    o,
+    r,
+    f = {},
+    e = [],
+    c = /acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|itera/i;
+
+function s(n, l) {
+  for (var u in l) n[u] = l[u];
+
+  return n;
+}
+
+function a(n) {
+  var l = n.parentNode;
+  l && l.removeChild(n);
+}
+
+function h(n, l, u) {
+  var i,
+      t,
+      o,
+      r = arguments,
+      f = {};
+
+  for (o in l) "key" == o ? i = l[o] : "ref" == o ? t = l[o] : f[o] = l[o];
+
+  if (arguments.length > 3) for (u = [u], o = 3; o < arguments.length; o++) u.push(r[o]);
+  if (null != u && (f.children = u), "function" == typeof n && null != n.defaultProps) for (o in n.defaultProps) void 0 === f[o] && (f[o] = n.defaultProps[o]);
+  return v(n, f, i, t, null);
+}
+
+function v(l, u, i, t, o) {
+  var r = {
+    type: l,
+    props: u,
+    key: i,
+    ref: t,
+    __k: null,
+    __: null,
+    __b: 0,
+    __e: null,
+    __d: void 0,
+    __c: null,
+    __h: null,
+    constructor: void 0,
+    __v: o
+  };
+  return null == o && (r.__v = r), null != n.vnode && n.vnode(r), r;
+}
+
+function y() {
+  return {
+    current: null
+  };
+}
+
+function p(n) {
+  return n.children;
+}
+
+function d(n, l) {
+  this.props = n, this.context = l;
+}
+
+function _(n, l) {
+  if (null == l) return n.__ ? _(n.__, n.__.__k.indexOf(n) + 1) : null;
+
+  for (var u; l < n.__k.length; l++) if (null != (u = n.__k[l]) && null != u.__e) return u.__e;
+
+  return "function" == typeof n.type ? _(n) : null;
+}
+
+function w(n) {
+  var l, u;
+
+  if (null != (n = n.__) && null != n.__c) {
+    for (n.__e = n.__c.base = null, l = 0; l < n.__k.length; l++) if (null != (u = n.__k[l]) && null != u.__e) {
+      n.__e = n.__c.base = u.__e;
+      break;
+    }
+
+    return w(n);
+  }
+}
+
+function k(l) {
+  (!l.__d && (l.__d = !0) && u.push(l) && !g.__r++ || t !== n.debounceRendering) && ((t = n.debounceRendering) || i)(g);
+}
+
+function g() {
+  for (var n; g.__r = u.length;) n = u.sort(function (n, l) {
+    return n.__v.__b - l.__v.__b;
+  }), u = [], n.some(function (n) {
+    var l, u, i, t, o, r, f;
+    n.__d && (r = (o = (l = n).__v).__e, (f = l.__P) && (u = [], (i = s({}, o)).__v = i, t = $(f, o, i, l.__n, void 0 !== f.ownerSVGElement, null != o.__h ? [r] : null, u, null == r ? _(o) : r, o.__h), j(u, o), t != r && w(o)));
+  });
+}
+
+function m(n, l, u, i, t, o, r, c, s, h) {
+  var y,
+      d,
+      w,
+      k,
+      g,
+      m,
+      b,
+      A = i && i.__k || e,
+      P = A.length;
+
+  for (s == f && (s = null != r ? r[0] : P ? _(i, 0) : null), u.__k = [], y = 0; y < l.length; y++) if (null != (k = u.__k[y] = null == (k = l[y]) || "boolean" == typeof k ? null : "string" == typeof k || "number" == typeof k ? v(null, k, null, null, k) : Array.isArray(k) ? v(p, {
+    children: k
+  }, null, null, null) : null != k.__e || null != k.__c ? v(k.type, k.props, k.key, null, k.__v) : k)) {
+    if (k.__ = u, k.__b = u.__b + 1, null === (w = A[y]) || w && k.key == w.key && k.type === w.type) A[y] = void 0;else for (d = 0; d < P; d++) {
+      if ((w = A[d]) && k.key == w.key && k.type === w.type) {
+        A[d] = void 0;
+        break;
+      }
+
+      w = null;
+    }
+    g = $(n, k, w = w || f, t, o, r, c, s, h), (d = k.ref) && w.ref != d && (b || (b = []), w.ref && b.push(w.ref, null, k), b.push(d, k.__c || g, k)), null != g ? (null == m && (m = g), s = x(n, k, w, A, r, g, s), h || "option" != u.type ? "function" == typeof u.type && (u.__d = s) : n.value = "") : s && w.__e == s && s.parentNode != n && (s = _(w));
+  }
+
+  if (u.__e = m, null != r && "function" != typeof u.type) for (y = r.length; y--;) null != r[y] && a(r[y]);
+
+  for (y = P; y--;) null != A[y] && L(A[y], A[y]);
+
+  if (b) for (y = 0; y < b.length; y++) I(b[y], b[++y], b[++y]);
+}
+
+function x(n, l, u, i, t, o, r) {
+  var f, e, c;
+  if (void 0 !== l.__d) f = l.__d, l.__d = void 0;else if (t == u || o != r || null == o.parentNode) n: if (null == r || r.parentNode !== n) n.appendChild(o), f = null;else {
+    for (e = r, c = 0; (e = e.nextSibling) && c < i.length; c += 2) if (e == o) break n;
+
+    n.insertBefore(o, r), f = r;
+  }
+  return void 0 !== f ? f : o.nextSibling;
+}
+
+function A(n, l, u, i, t) {
+  var o;
+
+  for (o in u) "children" === o || "key" === o || o in l || C(n, o, null, u[o], i);
+
+  for (o in l) t && "function" != typeof l[o] || "children" === o || "key" === o || "value" === o || "checked" === o || u[o] === l[o] || C(n, o, l[o], u[o], i);
+}
+
+function P(n, l, u) {
+  "-" === l[0] ? n.setProperty(l, u) : n[l] = null == u ? "" : "number" != typeof u || c.test(l) ? u : u + "px";
+}
+
+function C(n, l, u, i, t) {
+  var o, r, f;
+  if (t && "className" == l && (l = "class"), "style" === l) {
+    if ("string" == typeof u) n.style.cssText = u;else {
+      if ("string" == typeof i && (n.style.cssText = i = ""), i) for (l in i) u && l in u || P(n.style, l, "");
+      if (u) for (l in u) i && u[l] === i[l] || P(n.style, l, u[l]);
+    }
+  } else "o" === l[0] && "n" === l[1] ? (o = l !== (l = l.replace(/Capture$/, "")), (r = l.toLowerCase()) in n && (l = r), l = l.slice(2), n.l || (n.l = {}), n.l[l + o] = u, f = o ? N : z, u ? i || n.addEventListener(l, f, o) : n.removeEventListener(l, f, o)) : "list" !== l && "tagName" !== l && "form" !== l && "type" !== l && "size" !== l && "download" !== l && "href" !== l && !t && l in n ? n[l] = null == u ? "" : u : "function" != typeof u && "dangerouslySetInnerHTML" !== l && (l !== (l = l.replace(/xlink:?/, "")) ? null == u || !1 === u ? n.removeAttributeNS("http://www.w3.org/1999/xlink", l.toLowerCase()) : n.setAttributeNS("http://www.w3.org/1999/xlink", l.toLowerCase(), u) : null == u || !1 === u && !/^ar/.test(l) ? n.removeAttribute(l) : n.setAttribute(l, u));
+}
+
+function z(l) {
+  this.l[l.type + !1](n.event ? n.event(l) : l);
+}
+
+function N(l) {
+  this.l[l.type + !0](n.event ? n.event(l) : l);
+}
+
+function T(n, l, u) {
+  var i, t;
+
+  for (i = 0; i < n.__k.length; i++) (t = n.__k[i]) && (t.__ = n, t.__e && ("function" == typeof t.type && t.__k.length > 1 && T(t, l, u), l = x(u, t, t, n.__k, null, t.__e, l), "function" == typeof n.type && (n.__d = l)));
+}
+
+function $(l, u, i, t, o, r, f, e, c) {
+  var a,
+      h,
+      v,
+      y,
+      _,
+      w,
+      k,
+      g,
+      b,
+      x,
+      A,
+      P = u.type;
+
+  if (void 0 !== u.constructor) return null;
+  null != i.__h && (c = i.__h, e = u.__e = i.__e, u.__h = null, r = [e]), (a = n.__b) && a(u);
+
+  try {
+    n: if ("function" == typeof P) {
+      if (g = u.props, b = (a = P.contextType) && t[a.__c], x = a ? b ? b.props.value : a.__ : t, i.__c ? k = (h = u.__c = i.__c).__ = h.__E : ("prototype" in P && P.prototype.render ? u.__c = h = new P(g, x) : (u.__c = h = new d(g, x), h.constructor = P, h.render = M), b && b.sub(h), h.props = g, h.state || (h.state = {}), h.context = x, h.__n = t, v = h.__d = !0, h.__h = []), null == h.__s && (h.__s = h.state), null != P.getDerivedStateFromProps && (h.__s == h.state && (h.__s = s({}, h.__s)), s(h.__s, P.getDerivedStateFromProps(g, h.__s))), y = h.props, _ = h.state, v) null == P.getDerivedStateFromProps && null != h.componentWillMount && h.componentWillMount(), null != h.componentDidMount && h.__h.push(h.componentDidMount);else {
+        if (null == P.getDerivedStateFromProps && g !== y && null != h.componentWillReceiveProps && h.componentWillReceiveProps(g, x), !h.__e && null != h.shouldComponentUpdate && !1 === h.shouldComponentUpdate(g, h.__s, x) || u.__v === i.__v) {
+          h.props = g, h.state = h.__s, u.__v !== i.__v && (h.__d = !1), h.__v = u, u.__e = i.__e, u.__k = i.__k, h.__h.length && f.push(h), T(u, e, l);
+          break n;
+        }
+
+        null != h.componentWillUpdate && h.componentWillUpdate(g, h.__s, x), null != h.componentDidUpdate && h.__h.push(function () {
+          h.componentDidUpdate(y, _, w);
+        });
+      }
+      h.context = x, h.props = g, h.state = h.__s, (a = n.__r) && a(u), h.__d = !1, h.__v = u, h.__P = l, a = h.render(h.props, h.state, h.context), h.state = h.__s, null != h.getChildContext && (t = s(s({}, t), h.getChildContext())), v || null == h.getSnapshotBeforeUpdate || (w = h.getSnapshotBeforeUpdate(y, _)), A = null != a && a.type == p && null == a.key ? a.props.children : a, m(l, Array.isArray(A) ? A : [A], u, i, t, o, r, f, e, c), h.base = u.__e, u.__h = null, h.__h.length && f.push(h), k && (h.__E = h.__ = null), h.__e = !1;
+    } else null == r && u.__v === i.__v ? (u.__k = i.__k, u.__e = i.__e) : u.__e = H(i.__e, u, i, t, o, r, f, c);
+
+    (a = n.diffed) && a(u);
+  } catch (l) {
+    u.__v = null, (c || null != r) && (u.__e = e, u.__h = !!c, r[r.indexOf(e)] = null), n.__e(l, u, i);
+  }
+
+  return u.__e;
+}
+
+function j(l, u) {
+  n.__c && n.__c(u, l), l.some(function (u) {
+    try {
+      l = u.__h, u.__h = [], l.some(function (n) {
+        n.call(u);
+      });
+    } catch (l) {
+      n.__e(l, u.__v);
+    }
+  });
+}
+
+function H(n, l, u, i, t, o, r, c) {
+  var s,
+      a,
+      h,
+      v,
+      y,
+      p = u.props,
+      d = l.props;
+  if (t = "svg" === l.type || t, null != o) for (s = 0; s < o.length; s++) if (null != (a = o[s]) && ((null === l.type ? 3 === a.nodeType : a.localName === l.type) || n == a)) {
+    n = a, o[s] = null;
+    break;
+  }
+
+  if (null == n) {
+    if (null === l.type) return document.createTextNode(d);
+    n = t ? document.createElementNS("http://www.w3.org/2000/svg", l.type) : document.createElement(l.type, d.is && {
+      is: d.is
+    }), o = null, c = !1;
+  }
+
+  if (null === l.type) p === d || c && n.data === d || (n.data = d);else {
+    if (null != o && (o = e.slice.call(n.childNodes)), h = (p = u.props || f).dangerouslySetInnerHTML, v = d.dangerouslySetInnerHTML, !c) {
+      if (null != o) for (p = {}, y = 0; y < n.attributes.length; y++) p[n.attributes[y].name] = n.attributes[y].value;
+      (v || h) && (v && (h && v.__html == h.__html || v.__html === n.innerHTML) || (n.innerHTML = v && v.__html || ""));
+    }
+
+    A(n, d, p, t, c), v ? l.__k = [] : (s = l.props.children, m(n, Array.isArray(s) ? s : [s], l, u, i, "foreignObject" !== l.type && t, o, r, f, c)), c || ("value" in d && void 0 !== (s = d.value) && (s !== n.value || "progress" === l.type && !s) && C(n, "value", s, p.value, !1), "checked" in d && void 0 !== (s = d.checked) && s !== n.checked && C(n, "checked", s, p.checked, !1));
+  }
+  return n;
+}
+
+function I(l, u, i) {
+  try {
+    "function" == typeof l ? l(u) : l.current = u;
+  } catch (l) {
+    n.__e(l, i);
+  }
+}
+
+function L(l, u, i) {
+  var t, o, r;
+
+  if (n.unmount && n.unmount(l), (t = l.ref) && (t.current && t.current !== l.__e || I(t, null, u)), i || "function" == typeof l.type || (i = null != (o = l.__e)), l.__e = l.__d = void 0, null != (t = l.__c)) {
+    if (t.componentWillUnmount) try {
+      t.componentWillUnmount();
+    } catch (l) {
+      n.__e(l, u);
+    }
+    t.base = t.__P = null;
+  }
+
+  if (t = l.__k) for (r = 0; r < t.length; r++) t[r] && L(t[r], u, i);
+  null != o && a(o);
+}
+
+function M(n, l, u) {
+  return this.constructor(n, u);
+}
+
+function O(l, u, i) {
+  var t, r, c;
+  n.__ && n.__(l, u), r = (t = i === o) ? null : i && i.__k || u.__k, l = h(p, null, [l]), c = [], $(u, (t ? u : i || u).__k = l, r || f, f, void 0 !== u.ownerSVGElement, i && !t ? [i] : r ? null : u.childNodes.length ? e.slice.call(u.childNodes) : null, c, i || f, t), j(c, l);
+}
+
+function B(n, l) {
+  var u = {
+    __c: l = "__cC" + r++,
+    __: n,
+    Consumer: function (n, l) {
+      return n.children(l);
+    },
+    Provider: function (n, u, i) {
+      return this.getChildContext || (u = [], (i = {})[l] = this, this.getChildContext = function () {
+        return i;
+      }, this.shouldComponentUpdate = function (n) {
+        this.props.value !== n.value && u.some(k);
+      }, this.sub = function (n) {
+        u.push(n);
+        var l = n.componentWillUnmount;
+
+        n.componentWillUnmount = function () {
+          u.splice(u.indexOf(n), 1), l && l.call(n);
+        };
+      }), n.children;
+    }
+  };
+  return u.Provider.__ = u.Consumer.contextType = u;
+}
+
+n = {
+  __e: function (n, l) {
+    for (var u, i, t, o = l.__h; l = l.__;) if ((u = l.__c) && !u.__) try {
+      if ((i = u.constructor) && null != i.getDerivedStateFromError && (u.setState(i.getDerivedStateFromError(n)), t = u.__d), null != u.componentDidCatch && (u.componentDidCatch(n), t = u.__d), t) return l.__h = o, u.__E = u;
+    } catch (l) {
+      n = l;
+    }
+
+    throw n;
+  }
+}, d.prototype.setState = function (n, l) {
+  var u;
+  u = null != this.__s && this.__s !== this.state ? this.__s : this.__s = s({}, this.state), "function" == typeof n && (n = n(s({}, u), this.props)), n && s(u, n), null != n && this.__v && (l && this.__h.push(l), k(this));
+}, d.prototype.forceUpdate = function (n) {
+  this.__v && (this.__e = !0, n && this.__h.push(n), k(this));
+}, d.prototype.render = p, u = [], i = "function" == typeof Promise ? Promise.prototype.then.bind(Promise.resolve()) : setTimeout, g.__r = 0, o = f, r = 0;
+
+const AdParametersContext = B({
+  env: {
+    asset_cdn_uri: typeof ASSET_CDN_URI != "undefined" ? ASSET_CDN_URI : null,
+    asset_bucket_uri: typeof ASSET_BUCKET_URI != "undefined" ? ASSET_BUCKET_URI : null,
+    studio_tag_uri: typeof STUDIO_TAG_URI != "undefined" ? STUDIO_TAG_URI : null
+  },
+  config: typeof AD_CONFIG != "undefined" ? AD_CONFIG : {},
+  assets: typeof AD_ASSETS != "undefined" ? AD_ASSETS : {}
+});
+
+const ControlsContext = B({});
+
+const Indefinite = -2;
+
+const changes = {
+  subs: new Array(),
+  subscribe: fn => {
+    changes.subs.push(fn);
+  },
+  unsubscribe: fn => {
+    changes.subs = changes.subs.filter(sub => sub !== fn);
+  },
+  applyChange: change => {
+    changes.subs.forEach(sub => {
+      try {
+        sub(change);
+      } catch (e) {
+        console.error(e);
+      }
+    });
+  }
+};
+const subs = new Map();
+const globs = [];
+function subscribe(fn, event, scope) {
+  if (!event) return globs.push({
+    fn,
+    scope
+  });
+
+  if (!subs.has(event)) {
+    subs.set(event, []);
+  }
+
+  return subs.get(event).push({
+    fn,
+    scope
+  });
+}
+function unsubscribe(delFn, event) {
+  if (!subs.has(event)) return;
+  subs.set(event, subs.get(event).filter(({
+    fn
+  }) => fn !== delFn));
+}
+function emit(event, ...attrs) {
+  console.debug('emit', event, ...attrs);
+  globs.forEach(({
+    fn,
+    scope
+  }) => fn.apply(scope, [event, ...attrs]));
+  if (!subs.has(event)) return;
+  subs.get(event).map(({
+    fn,
+    scope
+  }) => fn.apply(scope, attrs));
+}
+
+const ApiMethods = ['addDeviceOrientationListener', 'setStudioData', 'setStartScreenVisibility', 'setSoundControlVisibility', 'setProgressControlVisibility', 'setFullscreenButtonVisibility', 'setFixedBackgroundImage', 'hideVideoContainer', 'setBackgroundColor', 'sendAdClickThru', 'requestFullscreen', 'performTapMode', 'sendVideoMetadata', 'hideCredits'];
+const ReturningApiMethods = ['getContextData', 'getSlotBounds', 'isStudioDisplay', 'isReplay', 'getUserLocation', 'getTeadsInfo', 'getSumologicOption', 'getStudioData', 'isFullscreen', 'customizeUI', 'isMobile'];
+
+function postMessageApi(w) {
+  const api = {};
+
+  for (const method of ApiMethods) {
+    Object.defineProperty(api, method, {
+      value: (...methodArgs) => w.postMessage({
+        method,
+        methodArgs
+      }, '*')
+    });
+  }
+
+  for (const method of ReturningApiMethods) {
+    Object.defineProperty(api, method, {
+      value: (ret, ...methodArgs) => {
+        addEventListener('message', function cb({
+          data
+        }) {
+          if ('method' in data) {
+            const {
+              method: replyMethod,
+              error,
+              methodReturn
+            } = data;
+
+            if (method && replyMethod === method) {
+              removeEventListener('message', cb);
+              ret && ret(error, methodReturn);
+            }
+          }
+        });
+        w.postMessage({
+          method,
+          methodArgs
+        }, '*');
+      }
+    });
+  }
+
+  return api;
+}
+
+function wrapApi(w) {
+  const api = {};
+
+  for (const method of ApiMethods) {
+    Object.defineProperty(api, method, {
+      value: (...args) => {
+        var _w$teads, _w$teads$api;
+
+        return w === null || w === void 0 ? void 0 : (_w$teads = w.teads) === null || _w$teads === void 0 ? void 0 : (_w$teads$api = _w$teads.api) === null || _w$teads$api === void 0 ? void 0 : _w$teads$api[method](...args);
+      }
+    });
+  }
+
+  for (const method of ReturningApiMethods) {
+    Object.defineProperty(api, method, {
+      value: (ret, ...methodArgs) => {
+        try {
+          var _w$teads2, _w$teads2$api;
+
+          ret(null, w === null || w === void 0 ? void 0 : (_w$teads2 = w.teads) === null || _w$teads2 === void 0 ? void 0 : (_w$teads2$api = _w$teads2.api) === null || _w$teads2$api === void 0 ? void 0 : _w$teads2$api[method](...methodArgs));
+        } catch (err) {
+          ret(err);
+        }
+      }
+    });
+  }
+
+  return api;
+}
+
+const HandshakeMethod = 'studio-ad--format-RPC';
+const Retries = 5;
+const Timeout_ms = 50;
+
+function* getWindows(w = window) {
+  while (w !== w.parent) {
+    w = w.parent;
+    yield w;
+  }
+}
+
+function sendInitRequest() {
+  if (instance) return;
+
+  for (const w of getWindows()) {
+    w.postMessage({
+      method: HandshakeMethod
+    }, '*');
+  }
+}
+
+function findTeadsApiInWindow() {
+  if ('teads' in window) return window;
+
+  for (const w of getWindows()) {
+    try {
+      if ('teads' in w) return w;
+    } catch (e) {// i'm sorry this ruined your day
+    }
+  }
+}
+
+let instance = null;
+
+let apiQueue = _ => void 0;
+
+let findingApi = false;
+
+function findTeadsApi() {
+  const w = findTeadsApiInWindow();
+
+  if (w) {
+    instance = w && wrapApi(w);
+    onTeadsApiAvailable.applyChange(true);
+  }
+
+  setTimeout(() => {
+    if (!instance) {
+      onTeadsApiAvailable.applyChange(false);
+    }
+  }, (Retries + 1) * Timeout_ms);
+
+  if (instance !== null) {
+    apiQueue(instance);
+  } else {
+    addEventListener('message', function onMessage({
+      data,
+      source
+    }) {
+      if (data && data.method == HandshakeMethod) {
+        removeEventListener('message', onMessage);
+        instance = postMessageApi(source);
+        apiQueue(instance);
+        onTeadsApiAvailable.applyChange(true);
+      }
+    });
+    sendInitRequest();
+
+    for (let i = 1; i < Retries; i++) {
+      setTimeout(sendInitRequest, i * Timeout_ms);
+    }
+  }
+}
+
+function enqueue(fn) {
+  if (instance) {
+    fn(instance);
+  } else {
+    const prev = apiQueue;
+
+    apiQueue = function (instance) {
+      prev(instance);
+      fn(instance);
+    };
+
+    if (!findingApi) {
+      findingApi = true;
+      findTeadsApi();
+    }
+  }
+}
+
+const teadsApi = {};
+
+for (const name of ApiMethods) {
+  Object.defineProperty(teadsApi, name, {
+    value: (...args) => {
+      console.debug(`teads`, name, ...args);
+      return enqueue(api => api[name](...args));
+    }
+  });
+}
+
+for (const name of ReturningApiMethods) {
+  Object.defineProperty(teadsApi, name, {
+    value: (cb, ...args) => {
+      console.debug(`teads ->`, name, ...args);
+      enqueue(api => api[name]((...args) => {
+        console.debug(`teads <-`, name, ...args);
+        return cb(...args);
+      }, ...args));
+    }
+  });
+}
+
+const onTeadsApiAvailable = {
+  value: null,
+  subs: new Array(),
+  subscribe: fn => {
+    onTeadsApiAvailable.subs.push(fn);
+    if (onTeadsApiAvailable.value != null) fn(onTeadsApiAvailable.value);
+  },
+  unsubscribe: fn => {
+    onTeadsApiAvailable.subs = onTeadsApiAvailable.subs.filter(sub => sub !== fn);
+  },
+  applyChange: available => {
+    onTeadsApiAvailable.value = available;
+    onTeadsApiAvailable.subs.forEach(sub => {
+      try {
+        sub(available);
+      } catch (e) {
+        console.error(e);
+      }
+    });
+  }
+};
+
+let JSXAdRenderer = () => null;
+
+function setJSXAdRenderer(fn) {
+  JSXAdRenderer = fn;
+}
+const attrs = {
+  linear: true,
+  width: 0,
+  height: 0,
+  expanded: false,
+  skippable: false,
+  remainingTime: Indefinite,
+  duration: Indefinite,
+  viewMode: 'normal',
+  bitrate: 256,
+  volume: 1,
+  companions: '',
+  icons: false,
+  quartile: 0
+};
+let adVideoComplete = false;
+
+function checkAdComplete({
+  remainingTime
+}) {
+  if (!adVideoComplete && remainingTime == 0) {
+    adVideoComplete = true;
+    applyChange('AdVideoComplete');
+  }
+}
+
+let nextQuartile = 0;
+const quartiles = [{
+  event: 'AdVideoFirstQuartile',
+  value: .25
+}, {
+  event: 'AdVideoMidpoint',
+  value: .5
+}, {
+  event: 'AdVideoThirdQuartile',
+  value: .75
+}];
+
+function sendQuartiles({
+  remainingTime,
+  duration
+}) {
+  const quartile = (duration - remainingTime) / duration;
+
+  if (nextQuartile < quartiles.length && quartile >= quartiles[nextQuartile].value) {
+    applyChange(quartiles[nextQuartile].event);
+    nextQuartile = nextQuartile + 1;
+  }
+}
+
+function updateDuration(timeUpdate) {
+  if (adVideoComplete) return;
+  applyChange("AdDurationChange", timeUpdate);
+}
+
+function updateTime(timeUpdate) {
+  updateDuration(timeUpdate);
+  sendQuartiles(timeUpdate);
+  checkAdComplete(timeUpdate);
+}
+
+let ClickThruMacros = new Map();
+
+function setupClickthruMacros() {
+  teadsApi.getContextData((e, ctx) => {
+    if (e) {
+      return console.error(e);
+    }
+
+    const tracking = ctx && ctx.tracking;
+
+    if (tracking) {
+      ClickThruMacros = new Map(Object.keys(tracking).map(key => [key.toLowerCase(), tracking[key]]));
+    }
+  });
+}
+
+function replaceClickthruMacros(link) {
+  return link.split(/(\[[^\]]+\])/g).map(chunk => {
+    if (chunk.startsWith('[') && chunk.endsWith(']') && chunk.length >= 3) {
+      const key = chunk.substring(1, chunk.length - 1).toLowerCase();
+
+      switch (key) {
+        case 'timestamp':
+          return Date.now();
+
+        default:
+          if (ClickThruMacros.has(key)) {
+            return ClickThruMacros.get(key);
+          }
+
+      }
+    }
+
+    return chunk;
+  }).join('');
+}
+
+function clickThru({
+  url,
+  id,
+  playerHandles
+}) {
+  emit('AdClickThru', replaceClickthruMacros(url), id, playerHandles);
+}
+
+function stopAd() {
+  return VPAIDAd.stopAd();
+}
+
+function setAdLoaded() {
+  emit('AdLoaded');
+}
+
+const controls = {
+  clickThru,
+  updateTime,
+  stopAd,
+  setAdLoaded,
+  changes
+};
+
+function applyChange(event, partial) {
+  switch (event) {
+    case 'AdStarted':
+      changes.applyChange({
+        event: 'start',
+        partial
+      });
+      changes.applyChange({
+        event: 'play',
+        partial
+      });
+      emit('AdVideoStart');
+      emit('AdImpression');
+      emit(event);
+      break;
+
+    case 'AdPlaying':
+      if (adVideoComplete) break;
+      changes.applyChange({
+        event: 'play',
+        partial
+      });
+      emit(event);
+      break;
+
+    case 'AdPaused':
+      if (adVideoComplete) break;
+      changes.applyChange({
+        event: 'pause',
+        partial
+      });
+      emit(event);
+      break;
+
+    case 'AdSkipped':
+    case 'AdVideoComplete':
+      changes.applyChange({
+        event: 'stop',
+        partial
+      });
+      emit(event);
+      break;
+
+    case 'AdVolumeChange':
+      changes.applyChange({
+        event: 'volume',
+        partial
+      });
+      emit(event);
+      break;
+
+    default:
+      changes.applyChange({
+        event,
+        partial
+      });
+      emit(event);
+  }
+
+  Object.assign(attrs, partial);
+}
+
+const VPAIDAd = {
+  initAd: (width, height, viewMode, bitrate, creativeData, environmentVars) => {
+    try {
+      setupClickthruMacros();
+      Object.assign(attrs, {
+        width,
+        height,
+        bitrate,
+        viewMode
+      });
+      const {
+        slot,
+        videoSlot
+      } = environmentVars;
+      const adParameters = JSON.parse(creativeData["AdParameters"]);
+      JSXAdRenderer({
+        slot,
+        controls,
+        videoSlot,
+        adParameters
+      });
+      adVideoComplete = false;
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
+  },
+  resizeAd: (width, height, viewMode) => applyChange('AdSizeChange', {
+    width,
+    height,
+    viewMode
+  }),
+  startAd: () => applyChange('AdStarted'),
+  stopAd: () => applyChange('AdStopped'),
+  pauseAd: () => applyChange('AdPaused'),
+  resumeAd: () => applyChange('AdPlaying'),
+  expandAd: () => applyChange('AdExpandedChange', {
+    expanded: true
+  }),
+  collapseAd: () => applyChange('AdExpandedChange', {
+    expanded: false
+  }),
+  skipAd: () => applyChange('AdSkipped'),
+  setAdVolume: volume => applyChange('AdVolumeChange', {
+    volume
+  }),
+  getAdLinear: () => attrs.linear,
+  getAdWidth: () => attrs.width,
+  getAdHeight: () => attrs.height,
+  getAdExpanded: () => attrs.expanded,
+  getAdSkippableState: () => attrs.skippable,
+  getAdRemainingTime: () => attrs.remainingTime,
+  getAdDuration: () => attrs.duration,
+  getAdCompanions: () => attrs.companions,
+  getAdIcons: () => attrs.icons,
+  getAdVolume: () => attrs.volume,
+  handshakeVersion: () => '2.0',
+  subscribe,
+  unsubscribe
+};
+
+window.getVPAIDAd = () => VPAIDAd;
+
+var t$1,
+    u$1,
+    r$1,
+    o$1 = 0,
+    i$1 = [],
+    c$1 = n.__r,
+    f$1 = n.diffed,
+    e$1 = n.__c,
+    a$1 = n.unmount;
+
+function v$1(t, r) {
+  n.__h && n.__h(u$1, t, o$1 || r), o$1 = 0;
+  var i = u$1.__H || (u$1.__H = {
+    __: [],
+    __h: []
+  });
+  return t >= i.__.length && i.__.push({}), i.__[t];
+}
+
+function m$1(n) {
+  return o$1 = 1, p$1(k$1, n);
+}
+
+function p$1(n, r, o) {
+  var i = v$1(t$1++, 2);
+  return i.t = n, i.__c || (i.__ = [o ? o(r) : k$1(void 0, r), function (n) {
+    var t = i.t(i.__[0], n);
+    i.__[0] !== t && (i.__ = [t, i.__[1]], i.__c.setState({}));
+  }], i.__c = u$1), i.__;
+}
+
+function y$1(r, o) {
+  var i = v$1(t$1++, 3);
+  !n.__s && j$1(i.__H, o) && (i.__ = r, i.__H = o, u$1.__H.__h.push(i));
+}
+
+function l(r, o) {
+  var i = v$1(t$1++, 4);
+  !n.__s && j$1(i.__H, o) && (i.__ = r, i.__H = o, u$1.__h.push(i));
+}
+
+function h$1(n) {
+  return o$1 = 5, _$1(function () {
+    return {
+      current: n
+    };
+  }, []);
+}
+
+function _$1(n, u) {
+  var r = v$1(t$1++, 7);
+  return j$1(r.__H, u) && (r.__ = n(), r.__H = u, r.__h = n), r.__;
+}
+
+function A$1(n, t) {
+  return o$1 = 8, _$1(function () {
+    return n;
+  }, t);
+}
+
+function F(n) {
+  var r = u$1.context[n.__c],
+      o = v$1(t$1++, 9);
+  return o.__c = n, r ? (null == o.__ && (o.__ = !0, r.sub(u$1)), r.props.value) : n.__;
+}
+
+function q() {
+  i$1.some(function (t) {
+    if (t.__P) try {
+      t.__H.__h.forEach(b), t.__H.__h.forEach(g$1), t.__H.__h = [];
+    } catch (u) {
+      return t.__H.__h = [], n.__e(u, t.__v), !0;
+    }
+  }), i$1 = [];
+}
+
+n.__r = function (n) {
+  c$1 && c$1(n), t$1 = 0;
+  var r = (u$1 = n.__c).__H;
+  r && (r.__h.forEach(b), r.__h.forEach(g$1), r.__h = []);
+}, n.diffed = function (t) {
+  f$1 && f$1(t);
+  var u = t.__c;
+  u && u.__H && u.__H.__h.length && (1 !== i$1.push(u) && r$1 === n.requestAnimationFrame || ((r$1 = n.requestAnimationFrame) || function (n) {
+    var t,
+        u = function () {
+      clearTimeout(r), x$1 && cancelAnimationFrame(t), setTimeout(n);
+    },
+        r = setTimeout(u, 100);
+
+    x$1 && (t = requestAnimationFrame(u));
+  })(q));
+}, n.__c = function (t, u) {
+  u.some(function (t) {
+    try {
+      t.__h.forEach(b), t.__h = t.__h.filter(function (n) {
+        return !n.__ || g$1(n);
+      });
+    } catch (r) {
+      u.some(function (n) {
+        n.__h && (n.__h = []);
+      }), u = [], n.__e(r, t.__v);
+    }
+  }), e$1 && e$1(t, u);
+}, n.unmount = function (t) {
+  a$1 && a$1(t);
+  var u = t.__c;
+  if (u && u.__H) try {
+    u.__H.__.forEach(b);
+  } catch (t) {
+    n.__e(t, u.__v);
+  }
+};
+var x$1 = "function" == typeof requestAnimationFrame;
+
+function b(n) {
+  "function" == typeof n.u && n.u();
+}
+
+function g$1(n) {
+  n.u = n.__();
+}
+
+function j$1(n, t) {
+  return !n || n.length !== t.length || t.some(function (t, u) {
+    return t !== n[u];
+  });
+}
+
+function k$1(n, t) {
+  return "function" == typeof t ? t(n) : t;
+}
+
+function useAdParameters() {
+  return F(AdParametersContext);
+}
+
+function useControls() {
+  return F(ControlsContext);
+}
+
+const rAF = function () {
+  return window["requestAnimationFrame"] || window["webkitRequestAnimationFrame"] || window["mozRequestAnimationFrame"] || function (callback) {
+    window.setTimeout(callback, 1000 / 60);
+  };
+}();
+const cAF = function () {
+  return window["cancelAnimationFrame"] || window["webkitCancelAnimationFrame"] || window["mozCancelAnimationFrame"] || function (id) {
+    window.clearTimeout(id);
+  };
+}();
+
+function useManualDuration(isPlaying, duration, updateTimeFn) {
+  const rAFRef = h$1(-1);
+  const startTime = h$1(Date.now());
+  const elapsedTime = h$1(0);
+  y$1(() => {
+    if (rAFRef.current !== -1) cAF(rAFRef.current);
+
+    if (!isPlaying) {
+      elapsedTime.current += Date.now() - startTime.current;
+      updateTimeFn({
+        duration,
+        remainingTime: Math.max(0, duration - elapsedTime.current / 1000)
+      });
+      return;
+    }
+
+    startTime.current = Date.now();
+
+    (function loop() {
+      rAFRef.current = rAF(loop);
+      const delta = Date.now() - startTime.current;
+      updateTimeFn({
+        duration,
+        remainingTime: Math.max(0, duration - (elapsedTime.current + delta) / 1000)
+      });
+    })();
+  }, [isPlaying]);
+}
+
+function useMaxSlotSize() {
+  const [size, setSize] = m$1({
+    width: 0,
+    height: 0
+  });
+
+  function updateSize() {
+    teadsApi.getSlotBounds((err, value) => {
+      if (err) console.error(err);else {
+        setSize({
+          width: value.maxWidth || value.width || value.viewportWidth || 0,
+          height: value.viewportHeight || 0
+        });
+      }
+    });
+  }
+
+  y$1(() => updateSize(), []);
+  y$1(() => {
+    const listener = ({
+      event
+    }) => {
+      if (event == "AdSizeChange") {
+        updateSize();
+      }
+    };
+
+    changes.subscribe(listener);
+    return () => changes.unsubscribe(listener);
+  }, []);
+  y$1(() => {
+    const listener = () => {
+      updateSize();
+    };
+
+    addEventListener('resize', listener);
+    return () => removeEventListener('resize', listener);
+  }, []);
+  return size;
+}
+
+function useOnTime(time, fn) {
+  y$1(() => {
+    const listener = ({
+      event,
+      partial
+    }) => {
+      if (event !== "AdDurationChange") return;
+
+      if (isNaN(partial.duration) || isNaN(partial.remainingTime) || partial.duration - partial.remainingTime < time) {
+        return;
+      }
+
+      fn();
+      changes.unsubscribe(listener);
+    };
+
+    changes.subscribe(listener);
+    return () => changes.unsubscribe(listener);
+  }, []);
+}
+
+const PreviewContext = B(false);
+
+let Platform;
+
+(function (Platform) {
+  Platform[Platform["Unknown"] = 0] = "Unknown";
+  Platform[Platform["Mobile"] = 1] = "Mobile";
+  Platform[Platform["Desktop"] = 2] = "Desktop";
+})(Platform || (Platform = {}));
+
+function usePlatform() {
+  const isPreview = F(PreviewContext);
+  const [platform, setPlatform] = m$1(isPreview ? Platform.Desktop : Platform.Unknown);
+  y$1(() => {
+    teadsApi.isMobile((err, isMobile) => !err && typeof isMobile === "boolean" && setPlatform(isMobile ? Platform.Mobile : Platform.Desktop));
+  }, []);
+  return platform;
+}
+
+function useSetAdBackgroundColor(color) {
+  l(() => {
+    teadsApi.setBackgroundColor(color);
+  }, []);
+}
+
+function useSetAdIsDisplay(display) {
+  l(() => {
+    teadsApi.setStudioData({
+      display
+    });
+  }, []);
+}
+
+let globalPlayState = {
+  isPlaying: false,
+  isStopped: true
+};
+function useVPAIDPlayState() {
+  const [playState, setPlayState] = m$1(globalPlayState);
+  const onChanges = A$1(() => {
+    if (playState !== globalPlayState) {
+      setPlayState(globalPlayState);
+    }
+  }, [globalPlayState]);
+  y$1(() => {
+    changes && changes.unsubscribe(onChanges);
+    changes && changes.subscribe(onChanges);
+    return () => changes && changes.unsubscribe(onChanges);
+  }, [onChanges]);
+
+  function stopVPAID() {
+    if (!playState.isPlaying) return;
+    const state = {
+      isPlaying: false,
+      isStopped: true
+    };
+    globalPlayState = state;
+    setPlayState(state);
+  }
+
+  return {
+    playState,
+    stopVPAID
+  };
+}
+changes.subscribe(({
+  event
+}) => {
+  switch (event) {
+    case 'pause':
+      return globalPlayState = {
+        isPlaying: false,
+        isStopped: false
+      };
+
+    case 'play':
+      return globalPlayState = {
+        isPlaying: true,
+        isStopped: false
+      };
+
+    case 'stop':
+      return globalPlayState = {
+        isPlaying: false,
+        isStopped: true
+      };
+  }
+});
+
+function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
+}
+
+function ownKeys(object, enumerableOnly) {
+  var keys = Object.keys(object);
+
+  if (Object.getOwnPropertySymbols) {
+    var symbols = Object.getOwnPropertySymbols(object);
+    if (enumerableOnly) symbols = symbols.filter(function (sym) {
+      return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+    });
+    keys.push.apply(keys, symbols);
+  }
+
+  return keys;
+}
+
+function _objectSpread2(target) {
+  for (var i = 1; i < arguments.length; i++) {
+    var source = arguments[i] != null ? arguments[i] : {};
+
+    if (i % 2) {
+      ownKeys(Object(source), true).forEach(function (key) {
+        _defineProperty(target, key, source[key]);
+      });
+    } else if (Object.getOwnPropertyDescriptors) {
+      Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+    } else {
+      ownKeys(Object(source)).forEach(function (key) {
+        Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+      });
+    }
+  }
+
+  return target;
+}
+
+function _objectWithoutPropertiesLoose(source, excluded) {
+  if (source == null) return {};
+  var target = {};
+  var sourceKeys = Object.keys(source);
+  var key, i;
+
+  for (i = 0; i < sourceKeys.length; i++) {
+    key = sourceKeys[i];
+    if (excluded.indexOf(key) >= 0) continue;
+    target[key] = source[key];
+  }
+
+  return target;
+}
+
+function _objectWithoutProperties(source, excluded) {
+  if (source == null) return {};
+
+  var target = _objectWithoutPropertiesLoose(source, excluded);
+
+  var key, i;
+
+  if (Object.getOwnPropertySymbols) {
+    var sourceSymbolKeys = Object.getOwnPropertySymbols(source);
+
+    for (i = 0; i < sourceSymbolKeys.length; i++) {
+      key = sourceSymbolKeys[i];
+      if (excluded.indexOf(key) >= 0) continue;
+      if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue;
+      target[key] = source[key];
+    }
+  }
+
+  return target;
+}
+
+function useRefArray(count) {
+  return _$1(() => {
+    const refs = new Array(count);
+
+    for (let i = 0; i < count; i++) {
+      refs[i] = y();
+    }
+
+    return refs;
+  }, [count]);
+}
+
+const PX = a => a + 'px';
+
+function classNames(...classes) {
+  return classes.filter(c => !!c).join(" ");
+}
+function mergeClasses(one, two) {
+  return _objectSpread2(_objectSpread2(_objectSpread2({}, one), two), Object.keys(two).filter(k => !!one[k]).map(k => [k, classNames(one[k], two[k])]).reduce((a, [k, v]) => _objectSpread2(_objectSpread2({}, a), {}, {
+    [k]: v
+  }), {}));
+}
+
+const BorderSize = 1;
+function CreativeComponent({
+  onClick,
+  adRef,
+  width,
+  height,
+  children,
+  className = "",
+  style = {}
+}) {
+  return h("div", {
+    ref: adRef,
+    onClick: onClick,
+    style: _objectSpread2({
+      cursor: 'pointer',
+      width,
+      height,
+      display: 'flex',
+      flexDirection: 'column',
+      fontFamily: '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto',
+      border: `solid ${BorderSize}px #f1f1f1`,
+      boxSizing: 'border-box'
+    }, style),
+    className: className
+  }, children);
+}
+
+const AssetComponentId = "studio-asset-component"; // Needed by format for MOAT tracking
+
+function* textNodes(parent) {
+  const walker = document.createTreeWalker(parent, NodeFilter.SHOW_TEXT);
+
+  while (walker.nextNode()) yield walker.currentNode;
+}
+
+function replaceElement(parent, replace, children) {
+  const frag = document.createDocumentFragment();
+  frag.append(...children);
+  parent.insertBefore(frag, replace);
+  if (replace) parent.removeChild(replace);
+}
+
+function insertText(element, text, prefixElement, styleWord) {
+  element.innerHTML = (text === null || text === void 0 ? void 0 : text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;').replace(/\n/g, '<br>')) || '';
+  const nodes = [...textNodes(element)];
+
+  for (const node of nodes) {
+    const parent = node.parentElement;
+    const text = node.textContent;
+    const parts = text.split(/(\s+)/).filter(_ => _.length !== 0).map(part => {
+      const elem = document.createElement('span');
+      if (styleWord) Object.assign(elem.style, styleWord(part));
+      elem.appendChild(document.createTextNode(part));
+      return elem;
+    });
+    replaceElement(parent, node, parts);
+  }
+
+  prefixElement && element.insertBefore(prefixElement, element.firstChild);
+}
+
+function lineClampStyle({
+  lines,
+  lineHeight,
+  dots,
+  style = {}
+}) {
+  return _objectSpread2(_objectSpread2({}, style), {}, {
+    overflow: "hidden"
+  }, dots && {
+    display: "-webkit-box",
+    "-webkit-line-clamp": lines,
+    "-webkit-box-orient": "vertical",
+    "line-height": lineHeight
+  });
+}
+
+function LineClamp(props) {
+  const ref = h$1();
+  l(() => {
+    insertText(ref.current, props.text, props.prefix, props.styleWord);
+  }, [props.text, props.prefix, props.styleWord]);
+  return h("div", {
+    style: lineClampStyle(props),
+    ref: ref
+  });
+}
+
+function styleInject(css, ref) {
+  if (ref === void 0) ref = {};
+  var insertAt = ref.insertAt;
+
+  if (!css || typeof document === 'undefined') {
+    return;
+  }
+
+  var head = document.head || document.getElementsByTagName('head')[0];
+  var style = document.createElement('style');
+  style.type = 'text/css';
+
+  if (insertAt === 'top') {
+    if (head.firstChild) {
+      head.insertBefore(style, head.firstChild);
+    } else {
+      head.appendChild(style);
+    }
+  } else {
+    head.appendChild(style);
+  }
+
+  if (style.styleSheet) {
+    style.styleSheet.cssText = css;
+  } else {
+    style.appendChild(document.createTextNode(css));
+  }
+}
+
+var css = ".creative_Creative__3GdZl {\n  background: #fafafa;\n  box-sizing: border-box; }\n\n.creative_Footer__3u2_C {\n  flex: 0 0 auto;\n  background: #fff; }\n  .creative_desktop-view__3dH_n .creative_Footer__3u2_C {\n    padding: 15px;\n    display: flex;\n    flex-direction: row;\n    transition: background-color .4s; }\n    .creative_desktop-view__3dH_n .creative_Footer__3u2_C:hover {\n      background-color: rgba(216, 216, 216, 0.24); }\n      .creative_desktop-view__3dH_n .creative_Footer__3u2_C:hover .creative_Title__gx_-4 {\n        text-decoration: underline; }\n\n.creative_desktop-view__3dH_n .creative_TextBox__26-T8 {\n  display: flex;\n  flex-direction: column-reverse;\n  flex: 1 1 auto;\n  padding-right: 20px;\n  box-sizing: border-box;\n  overflow: hidden; }\n\n.creative_mobile-view__IR005 .creative_TextBox__26-T8 {\n  padding: 8px; }\n\n.creative_mpu__3EVgW .creative_TextBox__26-T8 {\n  padding-top: 4px;\n  padding-left: 8px;\n  padding-right: 8px;\n  padding-bottom: 0px; }\n\n.creative_Brand__1IS00 {\n  display: flex;\n  flex-direction: row;\n  align-items: center;\n  height: 20px;\n  flex: 0 0 20px;\n  font-size: 12px;\n  line-height: 16px;\n  color: #a5a5a5; }\n  .creative_mobile-view__IR005 .creative_Brand__1IS00 {\n    margin-bottom: 6px; }\n  .creative_mpu__3EVgW .creative_Brand__1IS00 {\n    font-size: 10px;\n    line-height: 11px;\n    color: #9B9B9B;\n    margin-bottom: 0px; }\n\n.creative_Logo__1JbuG {\n  flex: 0 0 auto;\n  width: 20px;\n  height: 20px;\n  margin-right: 6px; }\n\n.creative_BrandName__184jp {\n  flex: 0 1 auto;\n  font-weight: bold;\n  overflow: hidden;\n  word-break: break-all;\n  white-space: nowrap; }\n  .creative_mpu__3EVgW .creative_BrandName__184jp {\n    font-weight: medium; }\n\n.creative_Sponsored__2bRYn {\n  flex: 0 0 auto;\n  margin-left: 4px; }\n  .creative_mpu__3EVgW .creative_Sponsored__2bRYn {\n    font-weight: regular; }\n\n.creative_Title__gx_-4 {\n  font-size: 18px;\n  font-weight: bold;\n  line-height: 20px;\n  color: #000;\n  flex: 1 1 auto;\n  align-items: center; }\n  .creative_desktop-view__3dH_n .creative_Title__gx_-4 {\n    margin-bottom: 8px; }\n  .creative_mpu__3EVgW .creative_Title__gx_-4 {\n    margin-bottom: 0;\n    font-size: 14px;\n    line-height: 17px;\n    height: 39px;\n    display: flex;\n    align-items: center; }\n\n.creative_mobile-view__IR005 .creative_Description__3rVXK {\n  font-size: 14px;\n  line-height: 19px;\n  color: #808080;\n  font-weight: 300; }\n\n.creative_desktop-view__3dH_n .creative_CTABox__1COJ5 {\n  flex: 0 0 auto;\n  display: flex;\n  align-items: center; }\n\n.creative_CTA__2Wm-c {\n  font-size: 14px;\n  line-height: 16px;\n  font-weight: bold;\n  white-space: nowrap;\n  padding: 10px;\n  box-sizing: border-box;\n  color: #03A9F4;\n  display: flex;\n  align-items: center;\n  transition: .4s; }\n  .creative_desktop-view__3dH_n.creative_active__1wU5i .creative_CTA__2Wm-c,\n  .creative_mobile-view__IR005.creative_active__1wU5i .creative_CTA__2Wm-c {\n    border-top-color: transparent;\n    color: #fff;\n    background-color: #03A9F4; }\n  .creative_desktop-view__3dH_n .creative_CTA__2Wm-c {\n    height: 34px;\n    border-radius: 4px; }\n    .creative_desktop-view__3dH_n .creative_CTA__2Wm-c:hover {\n      border-top-color: transparent;\n      color: #fff;\n      background-color: #1A94CB; }\n  .creative_mobile-view__IR005 .creative_CTA__2Wm-c {\n    width: 100%;\n    height: 36px;\n    border-top: 1px solid #f1f1f1;\n    color: #03A9F4;\n    background-color: #fff;\n    justify-content: space-between; }\n  .creative_desktop-view__3dH_n .creative_CTA__2Wm-c {\n    justify-content: center; }\n  .creative_mpu__3EVgW .creative_CTA__2Wm-c, .creative_mpu__3EVgW.creative_active__1wU5i .creative_CTA__2Wm-c {\n    padding: 0 10px;\n    display: flex;\n    align-items: center;\n    height: 30px; }\n\n.creative_CTAArrow__q0HxV {\n  width: 16px;\n  height: 16px;\n  background-image: url(\"data:image/svg+xml,%3Csvg version='1.1' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%2303A9F4' d='M5.859 4.125l2.156-2.109 9.984 9.984-9.984 9.984-2.156-2.109 7.922-7.875z'%3E%3C/path%3E%3C/svg%3E\");\n  background-size: 16px;\n  background-position: right;\n  margin-left: 20px; }\n  .creative_active__1wU5i .creative_CTAArrow__q0HxV {\n    background-image: url(\"data:image/svg+xml,%3Csvg version='1.1' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%23fff' d='M5.859 4.125l2.156-2.109 9.984 9.984-9.984 9.984-2.156-2.109 7.922-7.875z'%3E%3C/path%3E%3C/svg%3E\"); }\n  .creative_desktop-view__3dH_n .creative_CTAArrow__q0HxV {\n    display: none; }\n";
+var fileClasses = {"Creative":"creative_Creative__3GdZl","Footer":"creative_Footer__3u2_C","desktop-view":"creative_desktop-view__3dH_n","Title":"creative_Title__gx_-4","TextBox":"creative_TextBox__26-T8","mobile-view":"creative_mobile-view__IR005","mpu":"creative_mpu__3EVgW","Brand":"creative_Brand__1IS00","Logo":"creative_Logo__1JbuG","BrandName":"creative_BrandName__184jp","Sponsored":"creative_Sponsored__2bRYn","Description":"creative_Description__3rVXK","CTABox":"creative_CTABox__1COJ5","CTA":"creative_CTA__2Wm-c","active":"creative_active__1wU5i","CTAArrow":"creative_CTAArrow__q0HxV","creative":"creative_Creative__3GdZl","footer":"creative_Footer__3u2_C","desktopView":"creative_desktop-view__3dH_n","title":"creative_Title__gx_-4","textBox":"creative_TextBox__26-T8","mobileView":"creative_mobile-view__IR005","brand":"creative_Brand__1IS00","logo":"creative_Logo__1JbuG","brandName":"creative_BrandName__184jp","sponsored":"creative_Sponsored__2bRYn","description":"creative_Description__3rVXK","ctaBox":"creative_CTABox__1COJ5","cta":"creative_CTA__2Wm-c","ctaArrow":"creative_CTAArrow__q0HxV"};
+styleInject(css);
+
+const SearchRegex = /\?.*$/;
+
+function getSearch(asset) {
+  const searchMatch = asset && asset.match(SearchRegex);
+  return searchMatch ? searchMatch[0] : '';
+}
+
+function getOptimizedAsset(assets, asset, platform) {
+  if (!asset) {
+    return;
+  }
+
+  if (asset.startsWith('data:')) {
+    return asset;
+  }
+
+  if (platform === Platform.Unknown) {
+    return;
+  }
+
+  const search = getSearch(asset);
+  asset = asset.replace(SearchRegex, '');
+
+  if (!assets[asset]) {
+    return asset + search;
+  }
+
+  const low = assets[asset].low;
+  const high = assets[asset].high;
+  const optimizedAsset = platform === Platform.Mobile ? low || high || asset : high || asset;
+  return optimizedAsset + search;
+}
+
+function useOptimizedAsset(asset, cacheBuster) {
+  const platform = usePlatform();
+  const ctx = useAdParameters();
+  const preview = F(PreviewContext);
+  const prefix = preview ? ctx.env.asset_bucket_uri : ctx.env.asset_cdn_uri;
+  const baseUri = asset && asset.startsWith('data:') ? '' : prefix ? `${prefix}/` : '';
+  const query = cacheBuster ? `?${cacheBuster}` : '';
+  const url = _$1(() => {
+    const optimizedAsset = getOptimizedAsset(ctx.assets, asset, platform);
+    return optimizedAsset && `${baseUri}${optimizedAsset}${query}` || '';
+  }, [asset, query, platform]);
+  return url;
+}
+
+function PerformanceSingleImageCreative({
+  adRef,
+  adSize,
+  imgRef,
+  imgRatio,
+  onClick,
+  isCtaActive,
+  platform,
+  className,
+  classes: localClasses = {},
+  style
+}) {
+  var _config$main_image, _config$logo;
+
+  const isMPU = _$1(() => {
+    const mpuWidth = adSize.width && adSize.width <= 300 || false;
+    const mpuHeight = adSize.height && adSize.height <= 250 || false;
+    console.debug(`isMPU ${mpuWidth && mpuHeight} (${adSize.width}x${adSize.height})`);
+    return mpuWidth && mpuHeight;
+  }, [adSize.width, adSize.height]);
+  const classes = mergeClasses(fileClasses, localClasses);
+  const isMobile = _$1(() => platform === Platform.Mobile, [platform]);
+  const borderWidth = _$1(() => {
+    if (isMPU) {
+      return 1;
+    } else if (isMobile) {
+      return 0;
+    } else {
+      return 1;
+    }
+  }, [isMobile, isMPU]);
+  const creativeClasses = _$1(() => classNames(className, classes.Creative, isMobile || isMPU ? classes.mobileView : classes.desktopView, isCtaActive && classes.active, isMPU && classes.mpu), [isCtaActive, isMobile, isMPU]);
+  const {
+    config
+  } = useAdParameters();
+  const imgSize = _$1(() => ({
+    width: adSize.width,
+    height: adSize.width / imgRatio
+  }), [adSize, imgRatio]);
+  const mainImageUri = useOptimizedAsset((_config$main_image = config.main_image) === null || _config$main_image === void 0 ? void 0 : _config$main_image.uri);
+  const logoUri = useOptimizedAsset((_config$logo = config.logo) === null || _config$logo === void 0 ? void 0 : _config$logo.uri);
+  const lineHeights = _$1(() => ({
+    Title: isMPU ? 17 : 23,
+    // 20 = line height, 2 = fix for fb android (ST8-3390)
+    Description: 18
+  }), [isMPU]);
+  const showDescription = _$1(() => isMobile && !isMPU && !!config.description, [isMPU, isMobile, config.description]);
+  const creativeStyle = _$1(() => _objectSpread2(_objectSpread2({}, style), {}, {
+    borderWidth
+  }), [style, borderWidth]);
+  return h(CreativeComponent, {
+    adRef: adRef,
+    width: adSize.width ? PX(adSize.width) : "initial",
+    height: "100%",
+    onClick: onClick,
+    className: creativeClasses,
+    style: creativeStyle
+  }, h("img", {
+    alt: "",
+    src: mainImageUri,
+    ref: imgRef,
+    id: AssetComponentId,
+    style: {
+      objectFit: "cover",
+      width: imgSize.width ? PX(imgSize.width) : "initial",
+      height: imgSize.height ? PX(imgSize.height - 2 * borderWidth) : "initial",
+      margin: "-1px 0px",
+      maxWidth: "100%"
+    }
+  }), h("div", {
+    className: classes.Footer
+  }, h("div", {
+    className: classes.TextBox
+  }, h("div", {
+    className: classes.Brand
+  }, config.logo && config.logo.uri ? h("img", {
+    src: logoUri,
+    className: classes.Logo,
+    alt: ""
+  }) : null, h("span", {
+    className: classes.BrandName
+  }, config.brand), h("span", {
+    className: classes.Sponsored
+  }, "- ", config.sponsored)), h("div", {
+    className: classes.Title
+  }, h(LineClamp, {
+    lineHeight: lineHeights.Title,
+    lines: 2,
+    text: config.title,
+    dots: true
+  })), showDescription && h("div", {
+    className: classes.Description
+  }, h(LineClamp, {
+    lineHeight: lineHeights.Description,
+    lines: 3,
+    text: config.description,
+    dots: true
+  }))), h("div", {
+    className: classes.CTABox
+  }, h("div", {
+    className: classes.CTA
+  }, config.cta, h("div", {
+    className: classes.CTAArrow
+  })))));
+}
+
+var carousel = "carousel_carousel__IcmkF";
+var arrow = "carousel_Arrow__2jVCz";
+var left = "carousel_Left__12wiX";
+var right = "carousel_Right__3HkIt";
+var hidden = "carousel_Hidden__1F88Q";
+var container = "carousel_container__-sR6X";
+var css$1 = ".carousel_carousel__IcmkF {\n  overflow-x: auto;\n  scroll-snap-type: x mandatory;\n  -webkit-overflow-scrolling: touch;\n  scroll-behavior: smooth;\n  scrollbar-width: none;\n  white-space: nowrap;\n  padding-bottom: 15px;\n  margin-bottom: -15px; }\n  .carousel_carousel__IcmkF::-webkit-scrollbar {\n    width: 0;\n    /* Remove scrollbar space */\n    height: 0;\n    /* Remove scrollbar space */\n    background: transparent;\n    /* Optional: just make scrollbar invisible */\n    display: none;\n    -webkit-appearance: none; }\n  .carousel_carousel__IcmkF::-webkit-scrollbar-track {\n    background-color: transparent; }\n  .carousel_carousel__IcmkF::-webkit-scrollbar-thumb {\n    background-color: transparent; }\n  .carousel_carousel__IcmkF > * {\n    scroll-snap-align: center; }\n\n.carousel_Arrow__2jVCz {\n  position: absolute;\n  top: 50%;\n  width: 40px;\n  height: 40px;\n  border: 1px solid #e5e5e5;\n  z-index: 3;\n  background-size: 100% 100%;\n  background: rgba(255, 255, 255, 0.7) url(\"data:image/svg+xml,%3Csvg version='1.1' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%23484848' d='M5.859 4.125l2.156-2.109 9.984 9.984-9.984 9.984-2.156-2.109 7.922-7.875z'%3E%3C/path%3E%3C/svg%3E\") no-repeat center center;\n  transition: opacity .3s;\n  transform: translateY(-50%); }\n  .carousel_Arrow__2jVCz.carousel_Left__12wiX {\n    left: 10px;\n    transform: translateY(-50%) scaleX(-1); }\n  .carousel_Arrow__2jVCz.carousel_Right__3HkIt {\n    right: 10px; }\n  .carousel_Arrow__2jVCz.carousel_Hidden__1F88Q {\n    opacity: 0;\n    pointer-events: none; }\n\n.carousel_test__37PPS {\n  padding: 1px; }\n\n.carousel_container__-sR6X {\n  position: relative;\n  overflow: hidden;\n  width: 100%;\n  height: 100%; }\n";
+styleInject(css$1);
+
+function Carousel({
+  style,
+  className,
+  slideWidth,
+  slideCount,
+  renderSlide,
+  onSlideClick
+}) {
+  var _adParameters$preview3;
+
+  const ref = h$1(null);
+  const getSlideOffset = A$1(() => {
+    var _ref$current$offsetWi, _ref$current;
+
+    return (((_ref$current$offsetWi = (_ref$current = ref.current) === null || _ref$current === void 0 ? void 0 : _ref$current.offsetWidth) !== null && _ref$current$offsetWi !== void 0 ? _ref$current$offsetWi : slideWidth) - slideWidth) / 2;
+  }, [ref.current, slideWidth]);
+  const getCurrentSlide = A$1(() => {
+    var _ref$current$scrollLe, _ref$current2;
+
+    return Math.round((((_ref$current$scrollLe = (_ref$current2 = ref.current) === null || _ref$current2 === void 0 ? void 0 : _ref$current2.scrollLeft) !== null && _ref$current$scrollLe !== void 0 ? _ref$current$scrollLe : 0) + getSlideOffset()) / slideWidth);
+  }, [ref.current, slideWidth, getSlideOffset]);
+  const goToSlide = A$1(slide => {
+    var _ref$current3;
+
+    (_ref$current3 = ref.current) === null || _ref$current3 === void 0 ? void 0 : _ref$current3.scrollTo(slideWidth * slide - getSlideOffset(), 0);
+  }, [ref.current, slideWidth, getSlideOffset]);
+  const goToPrev = A$1(() => goToSlide(getCurrentSlide() - 1), [goToSlide, getCurrentSlide]);
+  const goToNext = A$1(() => goToSlide(getCurrentSlide() + 1), [goToSlide, getCurrentSlide]);
+  const adParameters = useAdParameters();
+  y$1(() => {
+    var _adParameters$preview;
+
+    if (typeof (adParameters === null || adParameters === void 0 ? void 0 : (_adParameters$preview = adParameters.preview) === null || _adParameters$preview === void 0 ? void 0 : _adParameters$preview.slide) === 'number') {
+      var _adParameters$preview2;
+
+      goToSlide(adParameters === null || adParameters === void 0 ? void 0 : (_adParameters$preview2 = adParameters.preview) === null || _adParameters$preview2 === void 0 ? void 0 : _adParameters$preview2.slide);
+    }
+  }, [adParameters === null || adParameters === void 0 ? void 0 : (_adParameters$preview3 = adParameters.preview) === null || _adParameters$preview3 === void 0 ? void 0 : _adParameters$preview3.slide]);
+  const [arrowVisibility, setArrowVisibility] = m$1({
+    prev: false,
+    next: false
+  });
+  y$1(() => {
+    if (!ref.current) return;
+
+    const listener = () => {
+      const scrollX = ref.current.scrollLeft;
+      const scrollW = ref.current.scrollWidth;
+      const realW = ref.current.offsetWidth;
+      const tolerance = 2;
+      const prev = scrollX <= tolerance;
+      const next = scrollX >= scrollW - realW - tolerance;
+
+      if (arrowVisibility.prev != prev || arrowVisibility.next != next) {
+        setArrowVisibility({
+          prev,
+          next
+        });
+      }
+    };
+
+    listener();
+    ref.current.addEventListener("scroll", listener, {
+      passive: true
+    });
+    return () => ref.current.removeEventListener("scroll", listener);
+  }, [arrowVisibility, ref.current]);
+  const arrowStyle = _$1(() => ({
+    top: slideWidth / 2
+  }), [slideWidth]);
+  const internalClick = A$1(index => () => {
+    if (getCurrentSlide() == index) {
+      onSlideClick(index);
+    } else {
+      goToSlide(index);
+    }
+  }, [getCurrentSlide, goToSlide, onSlideClick]);
+  const children = [];
+
+  for (let i = 0; i < slideCount; i++) {
+    children[i] = renderSlide(i, internalClick(i));
+  }
+
+  return h("div", {
+    className: container
+  }, h("div", {
+    className: classNames(arrow, left, arrowVisibility.prev && hidden),
+    style: arrowStyle,
+    onClick: goToPrev
+  }), h("div", {
+    className: classNames(arrow, right, arrowVisibility.next && hidden),
+    style: arrowStyle,
+    onClick: goToNext
+  }), h("div", {
+    className: classNames(carousel, className),
+    style: style,
+    ref: ref
+  }, children));
+}
+
+var css$2 = ".index_Carousel__22fqE {\n  display: flex;\n  position: relative; }\n\n.index_Slide__119vm * {\n  user-select: none;\n  pointer-events: none; }\n\n.index_Slide__119vm > div:not(.index_Footer__3V5fF) {\n  flex: 0 1 auto !important;\n  margin: 0 !important; }\n\n.index_mobile-view__1aZdI .index_Slide__119vm {\n  border-width: 1px !important; }\n\n.index_Footer__3V5fF {\n  flex: 1 0 auto; }\n  .index_mobile-view__1aZdI .index_Footer__3V5fF {\n    display: flex;\n    flex-direction: column; }\n\n.index_TextBox__1VRvQ {\n  justify-content: space-between; }\n  .index_mobile-view__1aZdI .index_TextBox__1VRvQ {\n    flex: 1 0 auto;\n    display: flex;\n    flex-direction: column;\n    justify-content: space-around; }\n\n.index_Title__2js6a, .index_Description__3-0e2 {\n  white-space: normal; }\n";
+var classes = {"Carousel":"index_Carousel__22fqE","Slide":"index_Slide__119vm","Footer":"index_Footer__3V5fF","mobile-view":"index_mobile-view__1aZdI","TextBox":"index_TextBox__1VRvQ","Title":"index_Title__2js6a","Description":"index_Description__3-0e2","carousel":"index_Carousel__22fqE","slide":"index_Slide__119vm","footer":"index_Footer__3V5fF","mobileView":"index_mobile-view__1aZdI","textBox":"index_TextBox__1VRvQ","title":"index_Title__2js6a","description":"index_Description__3-0e2"};
+styleInject(css$2);
+
+function usePerformanceCarouselResizer(slideCount, adWidth, platform, onMetaSent, slidesRef) {
+  const slideScaleFactor = _$1(() => {
+    switch (platform) {
+      case Platform.Unknown:
+        return 0;
+
+      case Platform.Mobile:
+        return 0.8;
+
+      case Platform.Desktop:
+        return 0.54;
+    }
+  }, [platform]);
+  const slideBorderWidth = _$1(() => platform === Platform.Mobile ? 1 : 0, [platform]);
+  const slideWidth = _$1(() => Math.ceil(adWidth * slideScaleFactor), [slideScaleFactor, adWidth]);
+  const [slideHeight, setSlideHeight] = m$1(0);
+  const [metaSent, setMetaSent] = m$1(false);
+  y$1(() => {
+    const maxHeight = Math.max(0, ...slidesRef.map(ref => {
+      var _ref$current;
+
+      return ((_ref$current = ref.current) === null || _ref$current === void 0 ? void 0 : _ref$current.getBoundingClientRect().height) || 0;
+    }));
+
+    const _slideHeight = Math.ceil(maxHeight) - 2 * slideBorderWidth;
+
+    if (slideWidth && _slideHeight !== slideHeight) {
+      setSlideHeight(_slideHeight);
+    }
+  });
+  y$1(() => {
+    if (slideWidth && !metaSent) {
+      const maxHeight = Math.max(0, ...slidesRef.map(ref => {
+        var _ref$current2;
+
+        return ((_ref$current2 = ref.current) === null || _ref$current2 === void 0 ? void 0 : _ref$current2.getBoundingClientRect().height) || 0;
+      }));
+
+      const _slideHeight = Math.ceil(maxHeight) - 2 * slideBorderWidth;
+
+      setSlideHeight(_slideHeight);
+      teadsApi.sendVideoMetadata({
+        width: adWidth,
+        height: _slideHeight
+      });
+      onMetaSent && onMetaSent();
+      setMetaSent(true);
+    }
+  }, [slideWidth, slideBorderWidth, metaSent]);
+  const containerSize = {
+    width: adWidth,
+    height: slideHeight
+  };
+  const slideSize = {
+    width: slideWidth,
+    height: slideHeight
+  };
+  return {
+    containerSize,
+    slideSize
+  };
+}
+
+function toSlideConfigs(config) {
+  const {
+    slides
+  } = config,
+        other = _objectWithoutProperties(config, ["slides"]);
+
+  const slideKeys = Object.keys(slides).map(k => parseInt(k, 10)).sort();
+  const slideConfigs = slideKeys.map(key => {
+    const {
+      title,
+      image,
+      destination_url
+    } = slides[key];
+    return _objectSpread2(_objectSpread2({}, other), {}, {
+      main_image: image,
+      title,
+      destination_url
+    });
+  });
+  return {
+    slideKeys,
+    slideConfigs,
+    slideCount: slideConfigs.length
+  };
+}
+
+const slideClasses = {
+  Creative: classes.Slide,
+  Footer: classes.Footer,
+  TextBox: classes.TextBox,
+  Title: classes.Title,
+  Description: classes.Description
+};
+const SlideSpacingPercent = 0.01;
+function PerformanceCarouselCreative({
+  platform,
+  ctaActive,
+  onClick,
+  onLoad,
+  adWidth,
+  containerRef
+}) {
+  const {
+    config,
+    assets,
+    env
+  } = F(AdParametersContext);
+  const {
+    slideConfigs,
+    slideKeys,
+    slideCount
+  } = _$1(() => toSlideConfigs(config), [config]);
+  const slidesRef = useRefArray(slideCount);
+  const {
+    containerSize,
+    slideSize
+  } = usePerformanceCarouselResizer(slideCount, adWidth, platform, onLoad, slidesRef);
+  const containerStyle = _$1(() => ({
+    width: containerSize.width,
+    minHeight: containerSize.height,
+    background: "#fff"
+  }), [containerSize]);
+  const slideSpace = _$1(() => containerSize.width * SlideSpacingPercent, [containerSize.width]);
+  const slideStyle = _$1(() => ({
+    height: "initial",
+    minHeight: slideSize.height,
+    flex: `0 0 ${PX(slideSize.width)}`
+  }), [slideSize.height]);
+  const slideStyleWithSpacing = _$1(() => _objectSpread2(_objectSpread2({}, slideStyle), {}, {
+    marginLeft: slideSpace
+  }), [slideSpace, slideStyle]);
+  const slideWidth = slideSize.width + slideSpace;
+  const slideClick = A$1(index => {
+    onClick(slideKeys[index]);
+  }, [onClick, slideKeys]);
+  const renderSlide = A$1((index, click) => h(AdParametersContext.Provider, {
+    value: {
+      config: slideConfigs[index],
+      assets,
+      env
+    }
+  }, h(PerformanceSingleImageCreative, {
+    platform: platform,
+    isCtaActive: ctaActive,
+    adRef: slidesRef[index],
+    adSize: slideSize,
+    imgRatio: 1,
+    onClick: click,
+    key: slideKeys[index],
+    classes: slideClasses,
+    style: index == 0 ? slideStyle : slideStyleWithSpacing
+  })), [slideConfigs, slideKeys, slidesRef, slideSize, assets, env]);
+  return h("div", {
+    style: containerStyle,
+    ref: containerRef
+  }, h(Carousel, {
+    slideWidth: slideWidth,
+    className: classNames(classes.Carousel, platform === Platform.Mobile && classes.mobileView),
+    slideCount: slideCount,
+    onSlideClick: slideClick,
+    renderSlide: renderSlide
+  }));
+}
+
+function PerformanceCarousel() {
+  const {
+    updateTime,
+    clickThru,
+    setAdLoaded
+  } = useControls();
+  const adParameters = useAdParameters();
+  useSetAdBackgroundColor("#fff");
+  useSetAdIsDisplay(true);
+  const [ctaActive, setCtaActive] = m$1(false);
+  useOnTime(2, () => setCtaActive(true));
+  const {
+    playState
+  } = useVPAIDPlayState();
+  useManualDuration(playState.isPlaying, 15, updateTime);
+  const onClick = A$1(slide => {
+    const {
+      config
+    } = adParameters;
+
+    if (clickThru) {
+      if (config.slides[slide].destination_url) {
+        clickThru({
+          url: config.slides[slide].destination_url,
+          id: null,
+          playerHandles: true
+        });
+      } else {
+        console.error('destination_url?');
+      }
+    } else {
+      console.error('clickthru?');
+    }
+  }, [clickThru, adParameters]);
+  const platform = usePlatform();
+  const {
+    width
+  } = useMaxSlotSize();
+  return h(PerformanceCarouselCreative, {
+    adWidth: width,
+    onLoad: setAdLoaded,
+    ctaActive: ctaActive,
+    platform: platform,
+    onClick: onClick
+  });
+}
+
+setJSXAdRenderer(({
+  slot,
+  controls,
+  adParameters
+}) => O(h(ControlsContext.Provider, {
+  value: controls
+}, h(AdParametersContext.Provider, {
+  value: adParameters
+}, h(PerformanceCarousel, null))), slot));

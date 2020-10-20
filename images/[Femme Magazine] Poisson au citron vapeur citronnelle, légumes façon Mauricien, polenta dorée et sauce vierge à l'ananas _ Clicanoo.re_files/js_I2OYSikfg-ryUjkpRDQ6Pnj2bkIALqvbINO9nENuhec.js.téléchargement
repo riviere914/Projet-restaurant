@@ -1,0 +1,1236 @@
+/*! jquery.cookie v1.4.1 | MIT */
+!function(a){"function"==typeof define&&define.amd?define(["jquery"],a):"object"==typeof exports?a(require("jquery")):a(jQuery)}(function(a){function b(a){return h.raw?a:encodeURIComponent(a)}function c(a){return h.raw?a:decodeURIComponent(a)}function d(a){return b(h.json?JSON.stringify(a):String(a))}function e(a){0===a.indexOf('"')&&(a=a.slice(1,-1).replace(/\\"/g,'"').replace(/\\\\/g,"\\"));try{return a=decodeURIComponent(a.replace(g," ")),h.json?JSON.parse(a):a}catch(b){}}function f(b,c){var d=h.raw?b:e(b);return a.isFunction(c)?c(d):d}var g=/\+/g,h=a.cookie=function(e,g,i){if(void 0!==g&&!a.isFunction(g)){if(i=a.extend({},h.defaults,i),"number"==typeof i.expires){var j=i.expires,k=i.expires=new Date;k.setTime(+k+864e5*j)}return document.cookie=[b(e),"=",d(g),i.expires?"; expires="+i.expires.toUTCString():"",i.path?"; path="+i.path:"",i.domain?"; domain="+i.domain:"",i.secure?"; secure":""].join("")}for(var l=e?void 0:{},m=document.cookie?document.cookie.split("; "):[],n=0,o=m.length;o>n;n++){var p=m[n].split("="),q=c(p.shift()),r=p.join("=");if(e&&e===q){l=f(r,g);break}e||void 0===(r=f(r))||(l[q]=r)}return l};h.defaults={},a.removeCookie=function(b,c){return void 0===a.cookie(b)?!1:(a.cookie(b,"",a.extend({},c,{expires:-1})),!a.cookie(b))}});;
+/**
+ * @file eu_cookie_compliance.js
+ *
+ * Defines the behavior of the eu cookie compliance banner.
+ */
+
+(function ($, Drupal, drupalSettings) {
+
+  'use strict';
+
+  Drupal.behaviors.euCookieCompliancePopup = {
+    attach: function (context) {
+      $('body').once('eu-cookie-compliance').each(function () {
+        // If configured, check JSON callback to determine if in EU.
+        if (drupalSettings.eu_cookie_compliance.popup_eu_only_js) {
+          if (Drupal.eu_cookie_compliance.showBanner()) {
+            var url = drupalSettings.path.baseUrl + drupalSettings.path.pathPrefix + 'eu-cookie-compliance-check';
+            var data = {};
+            $.getJSON(url, data, function (data) {
+              // If in the EU, show the compliance banner.
+              if (data.in_eu) {
+                Drupal.eu_cookie_compliance.execute();
+              }
+
+              // If not in EU, set an agreed cookie automatically.
+              else {
+                Drupal.eu_cookie_compliance.setStatus(2);
+              }
+            });
+          }
+        }
+
+        // Otherwise, fallback to standard behavior which is to render the banner.
+        else {
+          Drupal.eu_cookie_compliance.execute();
+        }
+      });
+    },
+  };
+
+  Drupal.eu_cookie_compliance = {};
+
+  Drupal.eu_cookie_compliance.execute = function () {
+    try {
+      if (!drupalSettings.eu_cookie_compliance.popup_enabled) {
+        return;
+      }
+
+      if (!Drupal.eu_cookie_compliance.cookiesEnabled()) {
+        return;
+      }
+
+      var status = Drupal.eu_cookie_compliance.getCurrentStatus();
+      if ((status === 0 && drupalSettings.eu_cookie_compliance.method === 'default') || status === null) {
+        if (!drupalSettings.eu_cookie_compliance.disagree_do_not_show_popup || status === null) {
+          // Detect mobile here and use mobile_popup_html_info, if we have a mobile device.
+          if (window.matchMedia('(max-width: ' + drupalSettings.eu_cookie_compliance.mobile_breakpoint + 'px)').matches && drupalSettings.eu_cookie_compliance.use_mobile_message) {
+            Drupal.eu_cookie_compliance.createPopup(drupalSettings.eu_cookie_compliance.mobile_popup_html_info);
+          } else {
+            Drupal.eu_cookie_compliance.createPopup(drupalSettings.eu_cookie_compliance.popup_html_info);
+          }
+
+          Drupal.eu_cookie_compliance.attachAgreeEvents();
+        }
+      } else if (status === 1 && drupalSettings.eu_cookie_compliance.popup_agreed_enabled) {
+        Drupal.eu_cookie_compliance.createPopup(drupalSettings.eu_cookie_compliance.popup_html_agreed);
+        Drupal.eu_cookie_compliance.attachHideEvents();
+      } else if (status === 2 && drupalSettings.eu_cookie_compliance.withdraw_enabled) {
+        Drupal.eu_cookie_compliance.createWithdrawBanner(drupalSettings.eu_cookie_compliance.withdraw_markup);
+        Drupal.eu_cookie_compliance.attachWithdrawEvents();
+      }
+    }
+    catch (e) {
+    }
+  };
+
+  Drupal.eu_cookie_compliance.createWithdrawBanner = function (html) {
+    var $html = $('<div></div>').html(html);
+    var $banner = $('.eu-cookie-withdraw-banner', $html);
+    $html.attr('id', 'sliding-popup');
+    $html.addClass('eu-cookie-withdraw-wrapper');
+
+    if (!drupalSettings.eu_cookie_compliance.popup_use_bare_css) {
+      $banner.height(drupalSettings.eu_cookie_compliance.popup_height)
+          .width(drupalSettings.eu_cookie_compliance.popup_width);
+    }
+    $html.hide();
+    var height = 0;
+    if (drupalSettings.eu_cookie_compliance.popup_position) {
+      $html.prependTo('body');
+      height = $html.outerHeight();
+
+      $html.show()
+          .addClass('sliding-popup-top')
+          .addClass('clearfix')
+          .css({ top: -1 * height });
+      // For some reason, the tab outerHeight is -10 if we don't use a timeout
+      // function to reveal the tab.
+      setTimeout(function () {
+        var height = $html.outerHeight();
+
+        $html.animate({ top: -1 * (height) }, drupalSettings.eu_cookie_compliance.popup_delay, null, function () {
+          $html.trigger('eu_cookie_compliance_popup_open');
+        });
+      }.bind($html), 0);
+    } else {
+      if (drupalSettings.eu_cookie_compliance.better_support_for_screen_readers) {
+        $html.prependTo('body');
+      } else {
+        $html.appendTo('body');
+      }
+      height = $html.outerHeight();
+      $html.show()
+          .addClass('sliding-popup-bottom')
+          .css({ bottom: -1 * height });
+      // For some reason, the tab outerHeight is -10 if we don't use a timeout
+      // function to reveal the tab.
+      setTimeout(function () {
+        var height = $html.outerHeight();
+
+        $html.animate({ bottom: -1 * (height) }, drupalSettings.eu_cookie_compliance.popup_delay, null, function () {
+          $html.trigger('eu_cookie_compliance_popup_open');
+        });
+      }.bind($html), 0);
+    }
+  };
+
+  Drupal.eu_cookie_compliance.toggleWithdrawBanner = function () {
+    var $wrapper = $('#sliding-popup');
+    var $tab = $('.eu-cookie-withdraw-tab');
+    var $bannerIsShowing = drupalSettings.eu_cookie_compliance.popup_position ? parseInt($wrapper.css('top')) === 0 : parseInt($wrapper.css('bottom')) === 0;
+    var height = $wrapper.outerHeight();
+    if (drupalSettings.eu_cookie_compliance.popup_position) {
+      if ($bannerIsShowing) {
+        $wrapper.animate({'top' : -1 * (height)}, drupalSettings.eu_cookie_compliance.popup_delay);
+      }
+      else {
+        $wrapper.animate({'top' : 0}, drupalSettings.eu_cookie_compliance.popup_delay);
+      }
+    }
+    else {
+      if ($bannerIsShowing) {
+        $wrapper.animate({'bottom' : -1 * (height)}, drupalSettings.eu_cookie_compliance.popup_delay);
+      }
+      else {
+        $wrapper.animate({'bottom' : 0}, drupalSettings.eu_cookie_compliance.popup_delay);
+      }
+    }
+  };
+
+  Drupal.eu_cookie_compliance.createPopup = function (html) {
+    // This fixes a problem with jQuery 1.9.
+    var popup = $('<div></div>').html(html);
+    popup.attr('id', 'sliding-popup');
+    if (!drupalSettings.eu_cookie_compliance.popup_use_bare_css) {
+      popup.height(drupalSettings.eu_cookie_compliance.popup_height)
+          .width(drupalSettings.eu_cookie_compliance.popup_width);
+    }
+
+    popup.hide();
+    var height = 0;
+    if (drupalSettings.eu_cookie_compliance.popup_position) {
+      popup.prependTo('body');
+      height = popup.outerHeight();
+      popup.show()
+        .addClass('sliding-popup-top clearfix')
+        .css({ top: -1 * height })
+        .animate({ top: 0 }, drupalSettings.eu_cookie_compliance.popup_delay, null, function () {
+          popup.trigger('eu_cookie_compliance_popup_open');
+        });
+    } else {
+      if (drupalSettings.eu_cookie_compliance.better_support_for_screen_readers) {
+        popup.prependTo('body');
+      } else {
+        popup.appendTo('body');
+      }
+
+      height = popup.outerHeight();
+      popup.show()
+        .addClass('sliding-popup-bottom')
+        .css({ bottom: -1 * height })
+        .animate({ bottom: 0 }, drupalSettings.eu_cookie_compliance.popup_delay, null, function () {
+          popup.trigger('eu_cookie_compliance_popup_open');
+        });
+    }
+  };
+
+  Drupal.eu_cookie_compliance.attachAgreeEvents = function () {
+    var clickingConfirms = drupalSettings.eu_cookie_compliance.popup_clicking_confirmation;
+    var scrollConfirms = drupalSettings.eu_cookie_compliance.popup_scrolling_confirmation;
+
+    $('.agree-button').click(Drupal.eu_cookie_compliance.acceptAction);
+    $('.decline-button').click(Drupal.eu_cookie_compliance.declineAction);
+
+    if (clickingConfirms) {
+      $('a, input[type=submit], button[type=submit]').bind('click.euCookieCompliance', Drupal.eu_cookie_compliance.acceptAction);
+    }
+
+    if (scrollConfirms) {
+      var alreadyScrolled = false;
+      var scrollHandler = function () {
+        if (alreadyScrolled) {
+          Drupal.eu_cookie_compliance.acceptAction();
+          $(window).off('scroll', scrollHandler);
+        } else {
+          alreadyScrolled = true;
+        }
+      };
+
+      $(window).bind('scroll', scrollHandler);
+    }
+
+    $('.find-more-button').not('.find-more-button-processed').addClass('find-more-button-processed').click(Drupal.eu_cookie_compliance.moreInfoAction);
+  };
+
+  Drupal.eu_cookie_compliance.attachHideEvents = function () {
+    var popupHideAgreed = drupalSettings.eu_cookie_compliance.popup_hide_agreed;
+    var clickingConfirms = drupalSettings.eu_cookie_compliance.popup_clicking_confirmation;
+    $('.hide-popup-button').click(function () {
+          Drupal.eu_cookie_compliance.changeStatus(2);
+        }
+    );
+    if (clickingConfirms) {
+      $('a, input[type=submit], button[type=submit]').unbind('click.euCookieCompliance');
+    }
+
+    if (popupHideAgreed) {
+      $('a, input[type=submit], button[type=submit]').bind('click.euCookieComplianceHideAgreed', function () {
+        Drupal.eu_cookie_compliance.changeStatus(2);
+      });
+    }
+
+    $('.find-more-button').not('.find-more-button-processed').addClass('find-more-button-processed').click(Drupal.eu_cookie_compliance.moreInfoAction);
+  };
+
+  Drupal.eu_cookie_compliance.attachWithdrawEvents = function () {
+    $('.eu-cookie-withdraw-button').click(Drupal.eu_cookie_compliance.withdrawAction);
+    $('.eu-cookie-withdraw-tab').click(Drupal.eu_cookie_compliance.toggleWithdrawBanner);
+  };
+
+  Drupal.eu_cookie_compliance.acceptAction = function () {
+    var agreedEnabled = drupalSettings.eu_cookie_compliance.popup_agreed_enabled;
+    var nextStatus = 1;
+    if (!agreedEnabled) {
+      Drupal.eu_cookie_compliance.setStatus(1);
+      nextStatus = 2;
+    }
+
+    if (!euCookieComplianceHasLoadedScripts) {
+      euCookieComplianceLoadScripts();
+    }
+
+    if (typeof euCookieComplianceBlockCookies !== 'undefined') {
+      clearInterval(euCookieComplianceBlockCookies);
+    }
+
+    Drupal.eu_cookie_compliance.changeStatus(nextStatus);
+  };
+
+  Drupal.eu_cookie_compliance.declineAction = function () {
+    Drupal.eu_cookie_compliance.setStatus(0);
+    let popup = $('#sliding-popup');
+    if (popup.hasClass('sliding-popup-top')) {
+      popup.animate({ top: popup.outerHeight() * -1 }).trigger('eu_cookie_compliance_popup_close');
+    }
+    else {
+      popup.animate({ bottom: popup.outerHeight() * -1 }).trigger('eu_cookie_compliance_popup_close');
+    }
+  };
+
+  Drupal.eu_cookie_compliance.withdrawAction = function () {
+    Drupal.eu_cookie_compliance.setStatus(null);
+    location.reload();
+  };
+
+  Drupal.eu_cookie_compliance.moreInfoAction = function () {
+    if (drupalSettings.eu_cookie_compliance.disagree_do_not_show_popup) {
+      Drupal.eu_cookie_compliance.setStatus(0);
+      $('#sliding-popup').trigger('eu_cookie_compliance_popup_close').remove();
+    } else {
+      if (drupalSettings.eu_cookie_compliance.popup_link_new_window) {
+        window.open(drupalSettings.eu_cookie_compliance.popup_link);
+      } else {
+        window.location.href = drupalSettings.eu_cookie_compliance.popup_link;
+      }
+    }
+  };
+
+  Drupal.eu_cookie_compliance.getCurrentStatus = function () {
+    var cookieName = (drupalSettings.eu_cookie_compliance.cookie_name === '') ? 'cookie-agreed' : drupalSettings.eu_cookie_compliance.cookie_name;
+    var value = $.cookie(cookieName);
+    value = parseInt(value);
+    if (isNaN(value)) {
+      value = null;
+    }
+
+    return value;
+  };
+
+  Drupal.eu_cookie_compliance.changeStatus = function (value) {
+    var status = Drupal.eu_cookie_compliance.getCurrentStatus();
+    var reloadPage = drupalSettings.eu_cookie_compliance.reload_page;
+    if (status === value) {
+      return;
+    }
+
+    if (drupalSettings.eu_cookie_compliance.popup_position) {
+      $('.sliding-popup-top').animate({ top: $('#sliding-popup').outerHeight() * -1 }, drupalSettings.eu_cookie_compliance.popup_delay, function () {
+        if (status === null && !reloadPage) {
+          $('#sliding-popup').html(drupalSettings.eu_cookie_compliance.popup_html_agreed).animate({ top: 0 }, drupalSettings.eu_cookie_compliance.popup_delay);
+          Drupal.eu_cookie_compliance.attachHideEvents();
+        } else if (status === 1) {
+          $('#sliding-popup').trigger('eu_cookie_compliance_popup_close').remove();
+        }
+      });
+    } else {
+      $('.sliding-popup-bottom').animate({ bottom: $('#sliding-popup').outerHeight() * -1 }, drupalSettings.eu_cookie_compliance.popup_delay, function () {
+        if (status === null && !reloadPage) {
+          $('#sliding-popup').html(drupalSettings.eu_cookie_compliance.popup_html_agreed).animate({ bottom: 0 }, drupalSettings.eu_cookie_compliance.popup_delay);
+          Drupal.eu_cookie_compliance.attachHideEvents();
+        } else if (status === 1) {
+          $('#sliding-popup').trigger('eu_cookie_compliance_popup_close').remove();
+        }
+      });
+    }
+
+    if (drupalSettings.eu_cookie_compliance.reload_page) {
+      location.reload();
+    }
+
+    if (value === 2 && drupalSettings.eu_cookie_compliance.withdraw_enabled) {
+      Drupal.eu_cookie_compliance.createWithdrawBanner(drupalSettings.eu_cookie_compliance.withdraw_markup);
+      Drupal.eu_cookie_compliance.attachWithdrawEvents();
+    }
+
+    Drupal.eu_cookie_compliance.setStatus(value);
+  };
+
+  Drupal.eu_cookie_compliance.setStatus = function (status) {
+    var date = new Date();
+    var domain = drupalSettings.eu_cookie_compliance.domain ? drupalSettings.eu_cookie_compliance.domain : '';
+    var path = drupalSettings.path.baseUrl;
+    var cookieName = (drupalSettings.eu_cookie_compliance.cookie_name === '') ? 'cookie-agreed' : drupalSettings.eu_cookie_compliance.cookie_name;
+    if (path.length > 1) {
+      var pathEnd = path.length - 1;
+      if (path.lastIndexOf('/') === pathEnd) {
+        path = path.substring(0, pathEnd);
+      }
+    }
+
+    var cookie_session = parseInt(drupalSettings.eu_cookie_compliance.cookie_session);
+    if (cookie_session) {
+      $.cookie(cookieName, status, { path: path, domain: domain });
+    } else {
+      var lifetime = parseInt(drupalSettings.eu_cookie_compliance.cookie_lifetime);
+      date.setDate(date.getDate() + lifetime);
+      $.cookie(cookieName, status, { expires: date, path: path, domain: domain });
+    }
+    $(document).trigger('eu_cookie_compliance.changeStatus', [status]);
+
+    // Store consent if applicable.
+    if (drupalSettings.eu_cookie_compliance.store_consent && ((status === 1 && drupalSettings.eu_cookie_compliance.popup_agreed_enabled) || (status === 2  && !drupalSettings.eu_cookie_compliance.popup_agreed_enabled))) {
+      var url = drupalSettings.path.baseUrl + drupalSettings.path.pathPrefix + 'eu-cookie-compliance/store_consent/banner';
+      $.post(url, {}, function (data) { });
+    }
+  };
+
+  Drupal.eu_cookie_compliance.hasAgreed = function () {
+    var status = Drupal.eu_cookie_compliance.getCurrentStatus();
+    return (status === 1 || status === 2);
+  };
+
+  Drupal.eu_cookie_compliance.showBanner = function () {
+    var showBanner = false;
+    var status = Drupal.eu_cookie_compliance.getCurrentStatus();
+    if ((status === 0 && drupalSettings.eu_cookie_compliance.method === 'default') || status === null) {
+      if (!drupalSettings.eu_cookie_compliance.disagree_do_not_show_popup || status === null) {
+        showBanner = true;
+      }
+    } else if (status === 1 && drupalSettings.eu_cookie_compliance.popup_agreed_enabled) {
+      showBanner = true;
+    }
+
+    return showBanner;
+  };
+
+  Drupal.eu_cookie_compliance.cookiesEnabled = function () {
+    var cookieEnabled = (navigator.cookieEnabled);
+    if (typeof navigator.cookieEnabled === 'undefined' && !cookieEnabled) {
+      $.cookie('testcookie', 'testcookie', { expires: 100 });
+      cookieEnabled = ($.cookie('testcookie').indexOf('testcookie') !== -1);
+    }
+
+    return (cookieEnabled);
+  };
+
+  // Load blocked scripts if the user has agreed to being tracked.
+  var euCookieComplianceHasLoadedScripts = false;
+  $(function () {
+    if (Drupal.eu_cookie_compliance.hasAgreed()
+        || (Drupal.eu_cookie_compliance.getCurrentStatus() === null && drupalSettings.eu_cookie_compliance.method !== 'opt_in')
+    ) {
+      euCookieComplianceLoadScripts();
+      euCookieComplianceHasLoadedScripts = true;
+    }
+  });
+
+  // Block cookies when the user hasn't agreed.
+  if ((drupalSettings.eu_cookie_compliance.method === 'opt_in' && (Drupal.eu_cookie_compliance.getCurrentStatus() === null  || !Drupal.eu_cookie_compliance.hasAgreed()))
+      || (drupalSettings.eu_cookie_compliance.method === 'opt_out' && !Drupal.eu_cookie_compliance.hasAgreed() && Drupal.eu_cookie_compliance.getCurrentStatus() !== null)
+  ) {
+    // Split the white-listed cookies.
+    var euCookieComplianceWhitelist = drupalSettings.eu_cookie_compliance.whitelisted_cookies.split(/\r\n|\n|\r/g);
+
+    // Add the EU Cookie Compliance cookie.
+    euCookieComplianceWhitelist.push((drupalSettings.eu_cookie_compliance.cookie_name === '') ? 'cookie-agreed' : drupalSettings.eu_cookie_compliance.cookie_name);
+    var euCookieComplianceBlockCookies = setInterval(function () {
+      // Load all cookies from jQuery.
+      var cookies = $.cookie();
+
+      // Check each cookie and try to remove it if it's not white-listed.
+      for (var i in cookies) {
+        var remove = true;
+        var hostname = window.location.hostname;
+        var cookieRemoved = false;
+        var index = 0;
+
+        // Skip the PHP session cookie.
+        if (i.indexOf('SESS') === 0 || i.indexOf('SSESS') === 0) {
+          remove = false;
+        }
+
+        // Check if the cookie is white-listed.
+        for (var item in euCookieComplianceWhitelist) {
+          if (i === euCookieComplianceWhitelist[item]) {
+            remove = false;
+          }
+        }
+
+        // Remove the cookie if it's not white-listed.
+        if (remove) {
+          while (!cookieRemoved && hostname !== '') {
+            // Attempt to remove.
+            cookieRemoved = $.removeCookie(i, { domain: '.' + hostname, path: '/' });
+            if (!cookieRemoved) {
+              cookieRemoved = $.removeCookie(i, { domain: hostname, path: '/' });
+            }
+
+            index = hostname.indexOf('.');
+
+            // We can be on a sub-domain, so keep checking the main domain as well.
+            hostname = (index === -1) ? '' : hostname.substring(index + 1);
+          }
+        }
+      }
+    }, 5000);
+  }
+
+})(jQuery, Drupal, drupalSettings);
+;
+/**
+ * @file
+ * Some basic behaviors and utility functions for Views.
+ */
+
+(function ($, Drupal, drupalSettings) {
+
+  'use strict';
+
+  /**
+   * @namespace
+   */
+  Drupal.Views = {};
+
+  /**
+   * Helper function to parse a querystring.
+   *
+   * @param {string} query
+   *   The querystring to parse.
+   *
+   * @return {object}
+   *   A map of query parameters.
+   */
+  Drupal.Views.parseQueryString = function (query) {
+    var args = {};
+    var pos = query.indexOf('?');
+    if (pos !== -1) {
+      query = query.substring(pos + 1);
+    }
+    var pair;
+    var pairs = query.split('&');
+    for (var i = 0; i < pairs.length; i++) {
+      pair = pairs[i].split('=');
+      // Ignore the 'q' path argument, if present.
+      if (pair[0] !== 'q' && pair[1]) {
+        args[decodeURIComponent(pair[0].replace(/\+/g, ' '))] = decodeURIComponent(pair[1].replace(/\+/g, ' '));
+      }
+    }
+    return args;
+  };
+
+  /**
+   * Helper function to return a view's arguments based on a path.
+   *
+   * @param {string} href
+   *   The href to check.
+   * @param {string} viewPath
+   *   The views path to check.
+   *
+   * @return {object}
+   *   An object containing `view_args` and `view_path`.
+   */
+  Drupal.Views.parseViewArgs = function (href, viewPath) {
+    var returnObj = {};
+    var path = Drupal.Views.getPath(href);
+    // Get viewPath url without baseUrl portion.
+    var viewHref = Drupal.url(viewPath).substring(drupalSettings.path.baseUrl.length);
+    // Ensure we have a correct path.
+    if (viewHref && path.substring(0, viewHref.length + 1) === viewHref + '/') {
+      returnObj.view_args = decodeURIComponent(path.substring(viewHref.length + 1, path.length));
+      returnObj.view_path = path;
+    }
+    return returnObj;
+  };
+
+  /**
+   * Strip off the protocol plus domain from an href.
+   *
+   * @param {string} href
+   *   The href to strip.
+   *
+   * @return {string}
+   *   The href without the protocol and domain.
+   */
+  Drupal.Views.pathPortion = function (href) {
+    // Remove e.g. http://example.com if present.
+    var protocol = window.location.protocol;
+    if (href.substring(0, protocol.length) === protocol) {
+      // 2 is the length of the '//' that normally follows the protocol.
+      href = href.substring(href.indexOf('/', protocol.length + 2));
+    }
+    return href;
+  };
+
+  /**
+   * Return the Drupal path portion of an href.
+   *
+   * @param {string} href
+   *   The href to check.
+   *
+   * @return {string}
+   *   An internal path.
+   */
+  Drupal.Views.getPath = function (href) {
+    href = Drupal.Views.pathPortion(href);
+    href = href.substring(drupalSettings.path.baseUrl.length, href.length);
+    // 3 is the length of the '?q=' added to the url without clean urls.
+    if (href.substring(0, 3) === '?q=') {
+      href = href.substring(3, href.length);
+    }
+    var chars = ['#', '?', '&'];
+    for (var i = 0; i < chars.length; i++) {
+      if (href.indexOf(chars[i]) > -1) {
+        href = href.substr(0, href.indexOf(chars[i]));
+      }
+    }
+    return href;
+  };
+
+})(jQuery, Drupal, drupalSettings);
+;
+/**
+ * @file
+ * Handles AJAX fetching of views, including filter submission and response.
+ */
+
+(function ($, Drupal, drupalSettings) {
+
+  'use strict';
+
+  /**
+   * Attaches the AJAX behavior to exposed filters forms and key View links.
+   *
+   * @type {Drupal~behavior}
+   *
+   * @prop {Drupal~behaviorAttach} attach
+   *   Attaches ajaxView functionality to relevant elements.
+   */
+  Drupal.behaviors.ViewsAjaxView = {};
+  Drupal.behaviors.ViewsAjaxView.attach = function () {
+    if (drupalSettings && drupalSettings.views && drupalSettings.views.ajaxViews) {
+      var ajaxViews = drupalSettings.views.ajaxViews;
+      for (var i in ajaxViews) {
+        if (ajaxViews.hasOwnProperty(i)) {
+          Drupal.views.instances[i] = new Drupal.views.ajaxView(ajaxViews[i]);
+        }
+      }
+    }
+  };
+
+  /**
+   * @namespace
+   */
+  Drupal.views = {};
+
+  /**
+   * @type {object.<string, Drupal.views.ajaxView>}
+   */
+  Drupal.views.instances = {};
+
+  /**
+   * Javascript object for a certain view.
+   *
+   * @constructor
+   *
+   * @param {object} settings
+   *   Settings object for the ajax view.
+   * @param {string} settings.view_dom_id
+   *   The DOM id of the view.
+   */
+  Drupal.views.ajaxView = function (settings) {
+    var selector = '.js-view-dom-id-' + settings.view_dom_id;
+    this.$view = $(selector);
+
+    // Retrieve the path to use for views' ajax.
+    var ajax_path = drupalSettings.views.ajax_path;
+
+    // If there are multiple views this might've ended up showing up multiple
+    // times.
+    if (ajax_path.constructor.toString().indexOf('Array') !== -1) {
+      ajax_path = ajax_path[0];
+    }
+
+    // Check if there are any GET parameters to send to views.
+    var queryString = window.location.search || '';
+    if (queryString !== '') {
+      // Remove the question mark and Drupal path component if any.
+      queryString = queryString.slice(1).replace(/q=[^&]+&?|&?render=[^&]+/, '');
+      if (queryString !== '') {
+        // If there is a '?' in ajax_path, clean url are on and & should be
+        // used to add parameters.
+        queryString = ((/\?/.test(ajax_path)) ? '&' : '?') + queryString;
+      }
+    }
+
+    this.element_settings = {
+      url: ajax_path + queryString,
+      submit: settings,
+      setClick: true,
+      event: 'click',
+      selector: selector,
+      progress: {type: 'fullscreen'}
+    };
+
+    this.settings = settings;
+
+    // Add the ajax to exposed forms.
+    this.$exposed_form = $('form#views-exposed-form-' + settings.view_name.replace(/_/g, '-') + '-' + settings.view_display_id.replace(/_/g, '-'));
+    this.$exposed_form.once('exposed-form').each($.proxy(this.attachExposedFormAjax, this));
+
+    // Add the ajax to pagers.
+    this.$view
+      // Don't attach to nested views. Doing so would attach multiple behaviors
+      // to a given element.
+      .filter($.proxy(this.filterNestedViews, this))
+      .once('ajax-pager').each($.proxy(this.attachPagerAjax, this));
+
+    // Add a trigger to update this view specifically. In order to trigger a
+    // refresh use the following code.
+    //
+    // @code
+    // $('.view-name').trigger('RefreshView');
+    // @endcode
+    var self_settings = $.extend({}, this.element_settings, {
+      event: 'RefreshView',
+      base: this.selector,
+      element: this.$view.get(0)
+    });
+    this.refreshViewAjax = Drupal.ajax(self_settings);
+  };
+
+  /**
+   * @method
+   */
+  Drupal.views.ajaxView.prototype.attachExposedFormAjax = function () {
+    var that = this;
+    this.exposedFormAjax = [];
+    // Exclude the reset buttons so no AJAX behaviours are bound. Many things
+    // break during the form reset phase if using AJAX.
+    $('input[type=submit], input[type=image]', this.$exposed_form).not('[data-drupal-selector=edit-reset]').each(function (index) {
+      var self_settings = $.extend({}, that.element_settings, {
+        base: $(this).attr('id'),
+        element: this
+      });
+      that.exposedFormAjax[index] = Drupal.ajax(self_settings);
+    });
+  };
+
+  /**
+   * @return {bool}
+   *   If there is at least one parent with a view class return false.
+   *
+   * @todo remove .size() replace with .length.
+   */
+  Drupal.views.ajaxView.prototype.filterNestedViews = function () {
+    // If there is at least one parent with a view class, this view
+    // is nested (e.g., an attachment). Bail.
+    return !this.$view.parents('.view').size();
+  };
+
+  /**
+   * Attach the ajax behavior to each link.
+   */
+  Drupal.views.ajaxView.prototype.attachPagerAjax = function () {
+    this.$view.find('ul.js-pager__items > li > a, th.views-field a, .attachment .views-summary a')
+      .each($.proxy(this.attachPagerLinkAjax, this));
+  };
+
+  /**
+   * Attach the ajax behavior to a singe link.
+   *
+   * @param {string} [id]
+   *   The ID of the link.
+   * @param {HTMLElement} link
+   *   The link element.
+   */
+  Drupal.views.ajaxView.prototype.attachPagerLinkAjax = function (id, link) {
+    var $link = $(link);
+    var viewData = {};
+    var href = $link.attr('href');
+    // Construct an object using the settings defaults and then overriding
+    // with data specific to the link.
+    $.extend(
+      viewData,
+      this.settings,
+      Drupal.Views.parseQueryString(href),
+      // Extract argument data from the URL.
+      Drupal.Views.parseViewArgs(href, this.settings.view_base_path)
+    );
+
+    var self_settings = $.extend({}, this.element_settings, {
+      submit: viewData,
+      base: false,
+      element: link
+    });
+    this.pagerAjax = Drupal.ajax(self_settings);
+  };
+
+  /**
+   * Views scroll to top ajax command.
+   *
+   * @param {Drupal.Ajax} [ajax]
+   *   A {@link Drupal.ajax} object.
+   * @param {object} response
+   *   Ajax response.
+   * @param {string} response.selector
+   *   Selector to use.
+   */
+  Drupal.AjaxCommands.prototype.viewsScrollTop = function (ajax, response) {
+    // Scroll to the top of the view. This will allow users
+    // to browse newly loaded content after e.g. clicking a pager
+    // link.
+    var offset = $(response.selector).offset();
+    // We can't guarantee that the scrollable object should be
+    // the body, as the view could be embedded in something
+    // more complex such as a modal popup. Recurse up the DOM
+    // and scroll the first element that has a non-zero top.
+    var scrollTarget = response.selector;
+    while ($(scrollTarget).scrollTop() === 0 && $(scrollTarget).parent()) {
+      scrollTarget = $(scrollTarget).parent();
+    }
+    // Only scroll upward.
+    if (offset.top - 10 < $(scrollTarget).scrollTop()) {
+      $(scrollTarget).animate({scrollTop: (offset.top - 10)}, 500);
+    }
+  };
+
+})(jQuery, Drupal, drupalSettings);
+;
+/**
+ * @file
+ * Adapted from underscore.js with the addition Drupal namespace.
+ */
+
+/**
+ * Limits the invocations of a function in a given time frame.
+ *
+ * The debounce function wrapper should be used sparingly. One clear use case
+ * is limiting the invocation of a callback attached to the window resize event.
+ *
+ * Before using the debounce function wrapper, consider first whether the
+ * callback could be attached to an event that fires less frequently or if the
+ * function can be written in such a way that it is only invoked under specific
+ * conditions.
+ *
+ * @param {function} func
+ *   The function to be invoked.
+ * @param {number} wait
+ *   The time period within which the callback function should only be
+ *   invoked once. For example if the wait period is 250ms, then the callback
+ *   will only be called at most 4 times per second.
+ * @param {bool} immediate
+ *   Whether we wait at the beginning or end to execute the function.
+ *
+ * @return {function}
+ *   The debounced function.
+ */
+Drupal.debounce = function (func, wait, immediate) {
+
+  'use strict';
+
+  var timeout;
+  var result;
+  return function () {
+    var context = this;
+    var args = arguments;
+    var later = function () {
+      timeout = null;
+      if (!immediate) {
+        result = func.apply(context, args);
+      }
+    };
+    var callNow = immediate && !timeout;
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+    if (callNow) {
+      result = func.apply(context, args);
+    }
+    return result;
+  };
+};
+;
+(function ($, Drupal, debounce) {
+  "use strict";
+
+  // Cached reference to $(window).
+  var $window = $(window);
+
+  // The threshold for how far to the bottom you should reach before reloading.
+  var scrollThreshold = 200;
+
+  // The selector for the automatic pager.
+  var automaticPagerSelector = '[data-drupal-views-infinite-scroll-pager="automatic"]';
+
+  // The selector for both manual load and automatic pager.
+  var pagerSelector = '[data-drupal-views-infinite-scroll-pager]';
+
+  // The selector for the automatic pager.
+  var contentWrapperSelector = '[data-drupal-views-infinite-scroll-content-wrapper]';
+
+  // The event and namespace that is bound to window for automatic scrolling.
+  var scrollEvent = 'scroll.views_infinite_scroll';
+
+  /**
+   * Insert a views infinite scroll view into the document.
+   *
+   * @param {jQuery} $newView
+   *   New content detached from the DOM.
+   */
+  $.fn.infiniteScrollInsertView = function ($newView) {
+    // Extract the view DOM ID from the view classes.
+    var matches = /(js-view-dom-id-\w+)/.exec(this.attr('class'));
+    var currentViewId = matches[1].replace('js-view-dom-id-', 'views_dom_id:');
+
+    // Get the existing ajaxViews object.
+    var view = Drupal.views.instances[currentViewId];
+    // Remove once so that the exposed form and pager are processed on
+    // behavior attach.
+    view.$view.removeOnce('ajax-pager');
+    view.$exposed_form.removeOnce('exposed-form');
+    // Make sure infinite scroll can be reinitialized.
+    var $existingPager = view.$view.find(pagerSelector);
+    $existingPager.removeOnce('infinite-scroll');
+
+    var $newRows = $newView.find(contentWrapperSelector).children();
+    var $newPager = $newView.find('.js-pager__items');
+
+    // Add the new rows to existing view.
+    view.$view.find(contentWrapperSelector).append($newRows);
+    // Replace the pager link with the new link and ajaxPageState values.
+    $existingPager.replaceWith($newPager);
+
+    // Run views and VIS behaviors.
+    Drupal.attachBehaviors(view.$view[0]);
+  };
+
+  /**
+   * Handle the automatic paging based on the scroll amount.
+   *
+   * @type {Drupal~behavior}
+   *
+   * @prop {Drupal~behaviorAttach} attach
+   *   Initialize infinite scroll pagers and bind the scroll event.
+   * @prop {Drupal~behaviorDetach} detach
+   *   During `unload` remove the scroll event binding.
+   */
+  Drupal.behaviors.views_infinite_scroll_automatic = {
+    attach : function(context, settings) {
+      $(context).find(automaticPagerSelector).once('infinite-scroll').each(function() {
+        var $pager = $(this);
+        $pager.addClass('visually-hidden');
+        $window.on(scrollEvent, debounce(function() {
+          if (window.innerHeight + window.pageYOffset > $pager.offset().top - scrollThreshold) {
+            $pager.find('[rel=next]').click();
+            $window.off(scrollEvent);
+          }
+        }, 200));
+      });
+    },
+    detach: function (context, settings, trigger) {
+      // In the case where the view is removed from the document, remove it's
+      // events. This is important in the case a view being refreshed for a reason
+      // other than a scroll. AJAX filters are a good example of the event needing
+      // to be destroyed earlier than above.
+      if (trigger === 'unload') {
+        if ($(context).find(automaticPagerSelector).removeOnce('infinite-scroll').length) {
+          $window.off(scrollEvent);
+        }
+      }
+    }
+  };
+
+})(jQuery, Drupal, Drupal.debounce);
+;
+/**
+ * @file
+ * Statistics functionality.
+ */
+
+(function ($, Drupal, drupalSettings) {
+
+  'use strict';
+
+  $(document).ready(function () {
+    $.ajax({
+      type: 'POST',
+      cache: false,
+      url: drupalSettings.statistics.url,
+      data: drupalSettings.statistics.data
+    });
+  });
+})(jQuery, Drupal, drupalSettings);
+;
+/**
+ * @file
+ * Form features.
+ */
+
+/**
+ * Triggers when a value in the form changed.
+ *
+ * The event triggers when content is typed or pasted in a text field, before
+ * the change event triggers.
+ *
+ * @event formUpdated
+ */
+
+(function ($, Drupal, debounce) {
+
+  'use strict';
+
+  /**
+   * Retrieves the summary for the first element.
+   *
+   * @return {string}
+   *   The text of the summary.
+   */
+  $.fn.drupalGetSummary = function () {
+    var callback = this.data('summaryCallback');
+    return (this[0] && callback) ? $.trim(callback(this[0])) : '';
+  };
+
+  /**
+   * Sets the summary for all matched elements.
+   *
+   * @param {function} callback
+   *   Either a function that will be called each time the summary is
+   *   retrieved or a string (which is returned each time).
+   *
+   * @return {jQuery}
+   *   jQuery collection of the current element.
+   *
+   * @fires event:summaryUpdated
+   *
+   * @listens event:formUpdated
+   */
+  $.fn.drupalSetSummary = function (callback) {
+    var self = this;
+
+    // To facilitate things, the callback should always be a function. If it's
+    // not, we wrap it into an anonymous function which just returns the value.
+    if (typeof callback !== 'function') {
+      var val = callback;
+      callback = function () { return val; };
+    }
+
+    return this
+      .data('summaryCallback', callback)
+      // To prevent duplicate events, the handlers are first removed and then
+      // (re-)added.
+      .off('formUpdated.summary')
+      .on('formUpdated.summary', function () {
+        self.trigger('summaryUpdated');
+      })
+      // The actual summaryUpdated handler doesn't fire when the callback is
+      // changed, so we have to do this manually.
+      .trigger('summaryUpdated');
+  };
+
+  /**
+   * Prevents consecutive form submissions of identical form values.
+   *
+   * Repetitive form submissions that would submit the identical form values
+   * are prevented, unless the form values are different to the previously
+   * submitted values.
+   *
+   * This is a simplified re-implementation of a user-agent behavior that
+   * should be natively supported by major web browsers, but at this time, only
+   * Firefox has a built-in protection.
+   *
+   * A form value-based approach ensures that the constraint is triggered for
+   * consecutive, identical form submissions only. Compared to that, a form
+   * button-based approach would (1) rely on [visible] buttons to exist where
+   * technically not required and (2) require more complex state management if
+   * there are multiple buttons in a form.
+   *
+   * This implementation is based on form-level submit events only and relies
+   * on jQuery's serialize() method to determine submitted form values. As such,
+   * the following limitations exist:
+   *
+   * - Event handlers on form buttons that preventDefault() do not receive a
+   *   double-submit protection. That is deemed to be fine, since such button
+   *   events typically trigger reversible client-side or server-side
+   *   operations that are local to the context of a form only.
+   * - Changed values in advanced form controls, such as file inputs, are not
+   *   part of the form values being compared between consecutive form submits
+   *   (due to limitations of jQuery.serialize()). That is deemed to be
+   *   acceptable, because if the user forgot to attach a file, then the size of
+   *   HTTP payload will most likely be small enough to be fully passed to the
+   *   server endpoint within (milli)seconds. If a user mistakenly attached a
+   *   wrong file and is technically versed enough to cancel the form submission
+   *   (and HTTP payload) in order to attach a different file, then that
+   *   edge-case is not supported here.
+   *
+   * Lastly, all forms submitted via HTTP GET are idempotent by definition of
+   * HTTP standards, so excluded in this implementation.
+   *
+   * @type {Drupal~behavior}
+   */
+  Drupal.behaviors.formSingleSubmit = {
+    attach: function () {
+      function onFormSubmit(e) {
+        var $form = $(e.currentTarget);
+        var formValues = $form.serialize();
+        var previousValues = $form.attr('data-drupal-form-submit-last');
+        if (previousValues === formValues) {
+          e.preventDefault();
+        }
+        else {
+          $form.attr('data-drupal-form-submit-last', formValues);
+        }
+      }
+
+      $('body').once('form-single-submit')
+        .on('submit.singleSubmit', 'form:not([method~="GET"])', onFormSubmit);
+    }
+  };
+
+  /**
+   * Sends a 'formUpdated' event each time a form element is modified.
+   *
+   * @param {HTMLElement} element
+   *   The element to trigger a form updated event on.
+   *
+   * @fires event:formUpdated
+   */
+  function triggerFormUpdated(element) {
+    $(element).trigger('formUpdated');
+  }
+
+  /**
+   * Collects the IDs of all form fields in the given form.
+   *
+   * @param {HTMLFormElement} form
+   *   The form element to search.
+   *
+   * @return {Array}
+   *   Array of IDs for form fields.
+   */
+  function fieldsList(form) {
+    var $fieldList = $(form).find('[name]').map(function (index, element) {
+      // We use id to avoid name duplicates on radio fields and filter out
+      // elements with a name but no id.
+      return element.getAttribute('id');
+    });
+    // Return a true array.
+    return $.makeArray($fieldList);
+  }
+
+  /**
+   * Triggers the 'formUpdated' event on form elements when they are modified.
+   *
+   * @type {Drupal~behavior}
+   *
+   * @prop {Drupal~behaviorAttach} attach
+   *   Attaches formUpdated behaviors.
+   * @prop {Drupal~behaviorDetach} detach
+   *   Detaches formUpdated behaviors.
+   *
+   * @fires event:formUpdated
+   */
+  Drupal.behaviors.formUpdated = {
+    attach: function (context) {
+      var $context = $(context);
+      var contextIsForm = $context.is('form');
+      var $forms = (contextIsForm ? $context : $context.find('form')).once('form-updated');
+      var formFields;
+
+      if ($forms.length) {
+        // Initialize form behaviors, use $.makeArray to be able to use native
+        // forEach array method and have the callback parameters in the right
+        // order.
+        $.makeArray($forms).forEach(function (form) {
+          var events = 'change.formUpdated input.formUpdated ';
+          var eventHandler = debounce(function (event) { triggerFormUpdated(event.target); }, 300);
+          formFields = fieldsList(form).join(',');
+
+          form.setAttribute('data-drupal-form-fields', formFields);
+          $(form).on(events, eventHandler);
+        });
+      }
+      // On ajax requests context is the form element.
+      if (contextIsForm) {
+        formFields = fieldsList(context).join(',');
+        // @todo replace with form.getAttribute() when #1979468 is in.
+        var currentFields = $(context).attr('data-drupal-form-fields');
+        // If there has been a change in the fields or their order, trigger
+        // formUpdated.
+        if (formFields !== currentFields) {
+          triggerFormUpdated(context);
+        }
+      }
+
+    },
+    detach: function (context, settings, trigger) {
+      var $context = $(context);
+      var contextIsForm = $context.is('form');
+      if (trigger === 'unload') {
+        var $forms = (contextIsForm ? $context : $context.find('form')).removeOnce('form-updated');
+        if ($forms.length) {
+          $.makeArray($forms).forEach(function (form) {
+            form.removeAttribute('data-drupal-form-fields');
+            $(form).off('.formUpdated');
+          });
+        }
+      }
+    }
+  };
+
+  /**
+   * Prepopulate form fields with information from the visitor browser.
+   *
+   * @type {Drupal~behavior}
+   *
+   * @prop {Drupal~behaviorAttach} attach
+   *   Attaches the behavior for filling user info from browser.
+   */
+  Drupal.behaviors.fillUserInfoFromBrowser = {
+    attach: function (context, settings) {
+      var userInfo = ['name', 'mail', 'homepage'];
+      var $forms = $('[data-user-info-from-browser]').once('user-info-from-browser');
+      if ($forms.length) {
+        userInfo.map(function (info) {
+          var $element = $forms.find('[name=' + info + ']');
+          var browserData = localStorage.getItem('Drupal.visitor.' + info);
+          var emptyOrDefault = ($element.val() === '' || ($element.attr('data-drupal-default-value') === $element.val()));
+          if ($element.length && emptyOrDefault && browserData) {
+            $element.val(browserData);
+          }
+        });
+      }
+      $forms.on('submit', function () {
+        userInfo.map(function (info) {
+          var $element = $forms.find('[name=' + info + ']');
+          if ($element.length) {
+            localStorage.setItem('Drupal.visitor.' + info, $element.val());
+          }
+        });
+      });
+    }
+  };
+
+})(jQuery, Drupal, Drupal.debounce);
+;
+/**
+ * @file
+ * Attaches behavior for the Filter module.
+ */
+
+(function ($, Drupal) {
+
+  'use strict';
+
+  /**
+   * Displays the guidelines of the selected text format automatically.
+   *
+   * @type {Drupal~behavior}
+   *
+   * @prop {Drupal~behaviorAttach} attach
+   *   Attaches behavior for updating filter guidelines.
+   */
+  Drupal.behaviors.filterGuidelines = {
+    attach: function (context) {
+
+      function updateFilterGuidelines(event) {
+        var $this = $(event.target);
+        var value = $this.val();
+        $this.closest('.filter-wrapper')
+          .find('.filter-guidelines-item').hide()
+          .filter('.filter-guidelines-' + value).show();
+      }
+
+      $(context).find('.filter-guidelines').once('filter-guidelines')
+        .find(':header').hide()
+        .closest('.filter-wrapper').find('select.filter-list')
+        .on('change.filterGuidelines', updateFilterGuidelines)
+        // Need to trigger the namespaced event to avoid triggering formUpdated
+        // when initializing the select.
+        .trigger('change.filterGuidelines');
+    }
+  };
+
+})(jQuery, Drupal);
+;
